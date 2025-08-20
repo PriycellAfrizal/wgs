@@ -6,7 +6,7 @@
         placeholder: 'Search Items .....', // Teks placeholder
         ajax: {
             // Konfigurasi Ajax untuk mengambil data dari server
-            url: 'namabarangunit.php', // Sesuaikan dengan nama skrip PHP Anda
+            url: 'marketing/namabarangunit.php', // Sesuaikan dengan nama skrip PHP Anda
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -58,7 +58,7 @@ $(document).ready(function() {
         width: '360px',
         placeholder: 'Search Customer .....',
         ajax: {
-            url: 'namacustomer.php',
+            url: 'marketing/namacustomer.php',
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -82,7 +82,7 @@ $(document).ready(function() {
 
         // Mengambil data terkait dari nama customer yang dipilih
         $.ajax({
-            url: 'namacp.php',
+            url: 'marketing/namacp.php',
             dataType: 'json',
             data: { namacustomer: namacustomer },
             success: function(data) {
@@ -135,7 +135,7 @@ $(document).ready(function() {
 
         // Mengambil nomor telepon dan no terkait dari cp yang dipilih
         $.ajax({
-            url: 'namacp.php',
+            url: 'marketing/namacp.php',
             dataType: 'json',
             data: { cp: cp },
             success: function(data) {
@@ -316,7 +316,7 @@ function initializeSelect2(rowId) {
             width: '370px',
             placeholder: 'Search Items ....',
             ajax: {
-                url: 'namabarangunit.php',
+                url: 'marketing/namabarangunit.php',
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {
@@ -437,5 +437,6 @@ function deleteRow(button) {
     // Perbarui subtotal setelah baris dihapus
     updateSubtotal();
 }
+
 
 
