@@ -2,7 +2,7 @@
                     // Mengirim permintaan Ajax ke server untuk mendapatkan tgl_in dan tgl_out
                     $.ajax({
                       type: "POST",
-                      url: "get_HistoryCustomer.php", // Ganti dengan nama file PHP yang akan menghandle permintaan ini
+                      url: "marketing/get_HistoryCustomer.php", // Ganti dengan nama file PHP yang akan menghandle permintaan ini
                       data: {
                         id: id
                       },
@@ -150,7 +150,7 @@ function saveCustomer() {
     // Make an AJAX request to save customer data
     $.ajax({
         type: 'POST',
-        url: 'save_customer.php', // Replace with your actual endpoint
+        url: 'marketing/save_customer.php', // Replace with your actual endpoint
         data: formData,
         processData: false,
         contentType: false,
