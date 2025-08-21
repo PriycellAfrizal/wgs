@@ -1,4 +1,34 @@
 $(document).ready(function () {
+    $('#satuanEdit').select2({
+        ajax: {
+            url: 'warehouse/get_satuann.php',
+            dataType: 'json',
+            delay: 250,
+            processResults: function (data) {
+                console.log(data); // Log the received data to the console
+                return {
+                    results: data
+                };
+            },
+            cache: true
+        },
+        language: {
+            searching: function () {
+                return 'Mencari...';
+            }
+        },
+        placeholder: 'Cari...',
+        minimumInputLength: 0,
+        allowClear: true,
+        formatNoMatches: function () {
+            return 'Tidak ditemukan hasil';
+        }
+    });
+});
+
+
+
+$(document).ready(function () {
     // Inisialisasi Select2 untuk dropdown classEdit
     $('#classEdit').select2({
         ajax: {
