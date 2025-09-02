@@ -1,19 +1,6 @@
 $(document).ready(function () {
-    // Daftar semua menu_key
-    const allModules = [
-        "acccolocal","accoc","accpoimport","accpolocal","accquotation","accspimport","accspk",
-        "accsplocal","acctt","bplant","buatfakturpajak","buatoc","buatpenawaran","buatspk","buattt",
-        "chassisdata","chassistype","co","component","customer","daftarspk","hiblow","masterbank",
-        "masterdivisi","masteritems","masterunits","mixer","p.bplant","p.hiblow","p.mixer","p.sparepart",
-        "paymenthistory","pembayaranco","pembayaranimport","pembayarantt","po","poimport",
-        "purchaseplanning","salesinvoice","salesorder","sparepart","spimport","splocal","stocksummary",
-        "suplierimport","suplierlocal","suratjalanlocal","usermanagement"
-    ];
 
-
-$(document).ready(function () {
-
-    // Render modul ke tabel
+    // Render modul + fitur ke tabel
     function renderModules(menuList, existingAccess = {}) {
         let html = "";
 
@@ -23,12 +10,12 @@ $(document).ready(function () {
 
             html += `
                 <tr>
-                    <td>
-                        <input type="checkbox" class="menu-check" data-menu="${menuKey}" ${isChecked}>
-                        <label class="ms-1">${menuKey}</label>
+                    <td style="width:50%">
+                        <input type="checkbox" class="form-check-input menu-check" data-menu="${menuKey}" ${isChecked}>
+                        <label class="ms-1 text-capitalize">${menuKey}</label>
                     </td>
-                    <td>
-                        <select class="form-select feature-select" data-menu="${menuKey}" ${isChecked ? "" : "disabled"}>
+                    <td style="width:50%">
+                        <select class="form-select form-select-sm feature-select" data-menu="${menuKey}" ${isChecked ? "" : "disabled"}>
                             <option value="viewers" ${feature === "viewers" ? "selected" : ""}>Viewers</option>
                             <option value="editor" ${feature === "editor" ? "selected" : ""}>Editor</option>
                         </select>
@@ -44,18 +31,17 @@ $(document).ready(function () {
         `);
     }
 
-    // Event: aktifkan/disable select feature jika checkbox dicentang
+    // Event: aktifkan/disable select sesuai checkbox
     $(document).on("change", ".menu-check", function () {
         const menuKey = $(this).data("menu");
         const select = $(`.feature-select[data-menu="${menuKey}"]`);
         select.prop("disabled", !$(this).is(":checked"));
     });
 
-    // Buka modal edit user
-    $(document).on("click", ".btn-edit-user", function () {
+    // Klik tombol Edit User
+    $(document).on("click", ".btn-edit", function () {
         const userId = $(this).data("id");
 
-        // Ambil detail user
         $.ajax({
             url: "get_user_detail.php",
             type: "GET",
@@ -67,7 +53,7 @@ $(document).ready(function () {
                     return;
                 }
 
-                // Set data user ke form
+                // Isi data user
                 $("#edit_id").val(res.data.id);
                 $("#edit_nama").val(res.data.nama);
 
@@ -93,7 +79,7 @@ $(document).ready(function () {
         });
     });
 
-    // Submit edit user
+    // Submit form Edit
     $("#formEditUser").on("submit", function (e) {
         e.preventDefault();
 
@@ -111,10 +97,14 @@ $(document).ready(function () {
                 id: $("#edit_id").val(),
                 access: JSON.stringify(access)
             },
+            dataType: "json",
             success: function (res) {
-                Swal.fire("Success", "User berhasil diperbarui", "success").then(() => {
-                    location.reload();
-                });
+                if (res.status === "success") {
+                    Swal.fire("Success", "User berhasil diperbarui", "success")
+                        .then(() => location.reload());
+                } else {
+                    Swal.fire("Error", res.message, "error");
+                }
             },
             error: function () {
                 Swal.fire("Error", "Gagal menyimpan data", "error");
