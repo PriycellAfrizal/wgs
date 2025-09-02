@@ -22,6 +22,8 @@ $(document).ready(function () {
             cache: true
         }
     });
+$(document).ready(function () {
+    var table = $('#dataTable').DataTable();
 
     // Tombol edit
     $(document).on('click', '.btn-edit', function () {
@@ -37,14 +39,30 @@ $(document).ready(function () {
                     $('#edit_id').val(response.data.id);
                     $('#edit_nama').val(response.data.nama);
 
-                    $('#menu_key').empty().trigger('change');
+                    var container = $('#menuFeatureContainer');
+                    container.empty();
 
-                    (response.data.menu_keys || []).forEach(function (menu) {
-                        var option = new Option(menu, menu, true, true);
-                        $('#menu_key').append(option);
+                    (response.data.access || []).forEach(function (item, idx) {
+                        var menu = item.menu_key;
+                        var feature = item.feature || 'viewer';
+
+                        var block = `
+                            <div class="row align-items-center mb-2">
+                                <div class="col-md-6">
+                                    <input type="hidden" name="menu_key[]" value="${menu}">
+                                    <input type="text" class="form-control bg-light" value="${menu}" disabled>
+                                </div>
+                                <div class="col-md-6">
+                                    <select name="feature[]" class="form-select">
+                                        <option value="viewer" ${feature === 'viewer' ? 'selected' : ''}>Viewer</option>
+                                        <option value="editor" ${feature === 'editor' ? 'selected' : ''}>Editor</option>
+                                    </select>
+                                </div>
+                            </div>
+                        `;
+                        container.append(block);
                     });
 
-                    $('#menu_key').trigger('change');
                     $('#modalEdit').modal('show');
                 } else {
                     Swal.fire('Error', response.message || 'Gagal memuat data', 'error');
@@ -67,7 +85,6 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (response) {
                 if (response.status === 'success') {
-                    // Notifikasi sukses muncul 2 detik tanpa tombol OK
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil',
@@ -77,26 +94,8 @@ $(document).ready(function () {
                         timerProgressBar: true
                     });
 
-                    // Tutup modal edit
                     $('#modalEdit').modal('hide');
-
-                    // Ambil data terbaru dari form
-                    var idUser = $('#edit_id').val();
-                    var namaBaru = $('#edit_nama').val();
-                    var menuBaru = $('#menu_key').val() || [];
-
-                    // Format menu baru jadi list bernomor dengan <br>
-                    var formattedMenu = menuBaru.map(function(m, i) {
-                        return (i + 1) + ". " + m;
-                    }).join('<br>');
-
-                    // Cari baris tabel berdasarkan data-id tombol edit
-                    var row = $("button.btn-edit[data-id='" + idUser + "']").closest('tr');
-
-                    // Update kolom nama (kolom ke-2) dan menu access (kolom ke-4)
-                    row.find('td').eq(1).text(namaBaru);
-                    row.find('td').eq(3).html(formattedMenu);
-
+                    table.ajax.reload(null, false); // reload datatable tanpa refresh
                 } else {
                     Swal.fire('Error', response.message || 'Gagal mengupdate data', 'error');
                 }
@@ -106,5 +105,4 @@ $(document).ready(function () {
             }
         });
     });
-
 });
