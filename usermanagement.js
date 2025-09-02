@@ -120,90 +120,146 @@ $(function () {
     });
   }
 
-  // Click .btn-edit
-  $(document).on('click', '.btn-edit', function(e){
-    e.preventDefault();
-    var userId = $(this).data('id');
-    if(!userId){ notifyError('Error','ID user tidak ditemukan pada tombol edit.'); return; }
+  
+$(document).ready(function () {
+  // --- Buka Modal Edit User ---
+  $(document).on("click", ".btn-edit", function () {
+    const userId = $(this).data("id");
 
-    // fetch both menu list and user detail in parallel
-    var menuReq = $.ajax({ url: 'menu_list.php', dataType: 'json', cache: false });
-    var detailReq = $.ajax({ url: 'get_user_detail.php', data: { id: userId }, dataType: 'json', cache: false });
+    // Reset form
+    $("#formEditUser")[0].reset();
+    $("#aksesContainer").empty();
 
-    $.when(menuReq, detailReq).done(function(menuRes, detailRes){
-      // jQuery gives arrays [data, status, jqXHR]
-      var menus = Array.isArray(menuRes) ? menuRes[0] : menuRes;
-      var detail = Array.isArray(detailRes) ? detailRes[0] : detailRes;
-
-      if(!detail || detail.status !== 'success'){
-        console.error('get_user_detail failed', detail);
-        notifyError('Gagal', (detail && detail.message) ? detail.message : 'Gagal memuat data user');
-        return;
-      }
-
-      // determine allMenus: prefer server-provided (all_menus/allMenus), else menu_list.php
-      var allMenus = [];
-      if(detail.data && Array.isArray(detail.data.all_menus)) allMenus = detail.data.all_menus;
-      else if(detail.data && Array.isArray(detail.data.allMenus)) allMenus = detail.data.allMenus;
-      else if(Array.isArray(menus)) allMenus = menus;
-      else {
-        // try keys of akses object
-        if(detail.data && typeof detail.data.akses === 'object') allMenus = Object.keys(detail.data.akses);
-      }
-
-      // build accessMap
-      var accessMap = buildAccessMap(detail.data || detail);
-
-      // fill form fields
-      $('#edit_id').val(detail.data.id || detail.id || '');
-      $('#edit_nama').val(detail.data.nama || detail.nama || '');
-
-      // finally render matrix
-      renderMatrix(allMenus, accessMap);
-
-      console.log('Rendered permission matrix', { allMenus: allMenus, accessMap: accessMap });
-      showModal();
-
-    }).fail(function(jq, textStatus, errThrown){
-      console.error('Ajax fail', jq, textStatus, errThrown);
-      var msg = 'Gagal menghubungi server.';
-      if(jq && jq.responseText){
-        try { var parsed = JSON.parse(jq.responseText); msg = parsed.message || jq.status + ' ' + textStatus; } catch(e){ msg = (jq.status? jq.status + ' ' : '') + textStatus; }
-      } else if(textStatus) msg = textStatus;
-      notifyError('Request Failed', msg);
-    });
-  });
-
-  // Submit update
-  $('#formEditUser').on('submit', function(e){
-    e.preventDefault();
-    var id = $('#edit_id').val();
-    if(!id){ notifyError('Error','ID user tidak ditemukan.'); return; }
-
+    // Ambil data user
     $.ajax({
-      url: 'update_user.php',
-      method: 'POST',
-      data: $(this).serialize(),
-      dataType: 'json'
-    }).done(function(res){
-      if(!res || res.status !== 'success'){ notifyError('Gagal', (res && res.message) ? res.message : 'Gagal menyimpan perubahan'); return; }
-      if(window.Swal) Swal.fire({ icon:'success', title:'Berhasil', text:'Akses diperbarui', timer:1200, showConfirmButton:false });
-      hideModal();
-      // update UI cell or reload table
-      try {
-        var perms = {}; $('#formEditUser input[name="menu_keys[]"]').each(function(i){ perms[$(this).val()] = $('#formEditUser input[name="perm_values['+i+']"]:checked').val() || 'none'; });
-        var formatted = Object.keys(perms).sort().map(function(k,i){ return perms[k] !== 'none' ? (i+1)+'. '+k+' = '+(perms[k].charAt(0).toUpperCase()+perms[k].slice(1)) : null; }).filter(Boolean).join('<br>');
-        var $row = $("button.btn-edit[data-id='"+id+"']").closest('tr'); if($row.length) $row.find('td').eq(3).html(formatted || '<em>Belum Memiliki Akses Apapun</em>');
-        else if(table && table.ajax) table.ajax.reload(null,false);
-      } catch(e){ if(table && table.ajax) table.ajax.reload(null,false); }
-    }).fail(function(jq, textStatus){
-      console.error('update_user fail', jq, textStatus);
-      var msg = 'Terjadi kesalahan saat menyimpan.';
-      if(jq && jq.responseText){
-        try{ msg = JSON.parse(jq.responseText).message || msg; } catch(e){ msg = jq.status + ' ' + textStatus; }
+      url: "get_user_detail.php",
+      type: "GET",
+      data: { id: userId },
+      dataType: "json",
+      success: function (res) {
+        if (res.status === "success") {
+          const data = res.data;
+          $("#editUserId").val(data.id);
+          $("#editNama").val(data.nama);
+
+          // Render menu akses
+          renderMenuAkses(data.akses);
+          $("#modalEdit").modal("show");
+        } else {
+          Swal.fire("Error", res.message || "Gagal mengambil data", "error");
+        }
+      },
+      error: function () {
+        Swal.fire("Error", "Terjadi kesalahan server", "error");
       }
-      notifyError('Simpan Gagal', msg);
     });
   });
 
+  // --- Render Menu Akses (Menu + Feature) ---
+  function renderMenuAkses(akses) {
+    const container = $("#aksesContainer");
+
+    Object.keys(akses).forEach((key) => {
+      const menu = akses[key];
+      const features = menu.features || [];
+
+      // Checkbox menu
+      const menuCheckbox = `
+        <div class="form-check mb-2">
+          <input type="checkbox" 
+                 class="form-check-input menu-checkbox" 
+                 id="menu_${menu.menu_key}" 
+                 data-menu="${menu.menu_key}" 
+                 ${features.length > 0 ? "checked" : ""}>
+          <label class="form-check-label fw-bold" for="menu_${menu.menu_key}">
+            ${menu.menu_key}
+          </label>
+        </div>
+      `;
+
+      // Radio fitur (viewer/editor)
+      const featureOptions = `
+        <div class="ms-4 mb-3 feature-options" data-parent="${menu.menu_key}" 
+             style="display: ${features.length > 0 ? "block" : "none"}">
+          <div class="form-check">
+            <input type="radio" 
+                   class="form-check-input" 
+                   name="feature_${menu.menu_key}" 
+                   value="viewer" 
+                   ${features.includes("viewer") ? "checked" : ""}>
+            <label class="form-check-label">Viewer</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" 
+                   class="form-check-input" 
+                   name="feature_${menu.menu_key}" 
+                   value="editor" 
+                   ${features.includes("editor") ? "checked" : ""}>
+            <label class="form-check-label">Editor</label>
+          </div>
+        </div>
+      `;
+
+      container.append(menuCheckbox + featureOptions);
+    });
+  }
+
+  // --- Toggle feature saat centang menu ---
+  $(document).on("change", ".menu-checkbox", function () {
+    const menuKey = $(this).data("menu");
+    const featureBox = $(`.feature-options[data-parent="${menuKey}"]`);
+    if ($(this).is(":checked")) {
+      featureBox.show();
+    } else {
+      featureBox.hide();
+      featureBox.find("input[type=radio]").prop("checked", false);
+    }
+  });
+
+  // --- Submit Form Edit User ---
+  $("#formEditUser").on("submit", function (e) {
+    e.preventDefault();
+
+    // Ambil data akses yang dipilih
+    const akses = {};
+    $(".menu-checkbox").each(function () {
+      const menuKey = $(this).data("menu");
+      if ($(this).is(":checked")) {
+        const feature = $(
+          `input[name="feature_${menuKey}"]:checked`
+        ).val();
+        akses[menuKey] = {
+          menu_key: menuKey,
+          features: feature ? [feature] : []
+        };
+      }
+    });
+
+    // Kirim data ke server
+    $.ajax({
+      url: "update_user.php",
+      type: "POST",
+      data: {
+        id: $("#editUserId").val(),
+        nama: $("#editNama").val(),
+        akses: JSON.stringify(akses)
+      },
+      success: function (res) {
+        try {
+          const json = JSON.parse(res);
+          if (json.status === "success") {
+            Swal.fire("Berhasil", "Data user berhasil diperbarui", "success")
+              .then(() => location.reload());
+          } else {
+            Swal.fire("Error", json.message || "Gagal update data", "error");
+          }
+        } catch (e) {
+          Swal.fire("Error", "Respon server tidak valid", "error");
+        }
+      },
+      error: function () {
+        Swal.fire("Error", "Terjadi kesalahan server", "error");
+      }
+    });
+  });
 });
