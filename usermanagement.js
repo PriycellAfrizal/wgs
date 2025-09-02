@@ -10,18 +10,22 @@ $(document).ready(function () {
         "suplierimport","suplierlocal","suratjalanlocal","usermanagement"
     ];
 
-    // Render modul ke dalam tabel
-    function renderModules(existingAccess = {}) {
+
+$(document).ready(function () {
+
+    // Render modul ke tabel
+    function renderModules(menuList, existingAccess = {}) {
         let html = "";
-        allModules.forEach(menuKey => {
+
+        menuList.forEach(menuKey => {
             const isChecked = existingAccess[menuKey] ? "checked" : "";
-            const feature = existingAccess[menuKey] ? existingAccess[menuKey] : "viewers"; // default viewers
+            const feature = existingAccess[menuKey] || "viewers"; // default
 
             html += `
                 <tr>
                     <td>
                         <input type="checkbox" class="menu-check" data-menu="${menuKey}" ${isChecked}>
-                        <label>${menuKey}</label>
+                        <label class="ms-1">${menuKey}</label>
                     </td>
                     <td>
                         <select class="form-select feature-select" data-menu="${menuKey}" ${isChecked ? "" : "disabled"}>
@@ -32,37 +36,56 @@ $(document).ready(function () {
                 </tr>
             `;
         });
-        $("#moduleTable tbody").html(html);
+
+        $("#menuFeatureContainer").html(`
+            <table class="table table-sm align-middle mb-0">
+                <tbody>${html}</tbody>
+            </table>
+        `);
     }
 
     // Event: aktifkan/disable select feature jika checkbox dicentang
     $(document).on("change", ".menu-check", function () {
         const menuKey = $(this).data("menu");
         const select = $(`.feature-select[data-menu="${menuKey}"]`);
-        if ($(this).is(":checked")) {
-            select.prop("disabled", false);
-        } else {
-            select.prop("disabled", true);
-        }
+        select.prop("disabled", !$(this).is(":checked"));
     });
 
-    // Ambil data akses user saat buka modal edit
+    // Buka modal edit user
     $(document).on("click", ".btn-edit-user", function () {
         const userId = $(this).data("id");
+
+        // Ambil detail user
         $.ajax({
             url: "get_user_detail.php",
             type: "GET",
             data: { id: userId },
             dataType: "json",
             success: function (res) {
-                if (res.status === "success") {
-                    // render modul dengan data existing
-                    const accessData = res.data.menu_access || {};
-                    renderModules(accessData);
-                    $("#modalEdit").modal("show");
-                } else {
+                if (res.status !== "success") {
                     Swal.fire("Error", res.message, "error");
+                    return;
                 }
+
+                // Set data user ke form
+                $("#edit_id").val(res.data.id);
+                $("#edit_nama").val(res.data.nama);
+
+                const accessData = res.data.akses || {};
+
+                // Ambil daftar menu dari menu_list.php
+                $.ajax({
+                    url: "menu_list.php",
+                    type: "GET",
+                    dataType: "json",
+                    success: function (menuList) {
+                        renderModules(menuList, accessData);
+                        $("#modalEdit").modal("show");
+                    },
+                    error: function () {
+                        Swal.fire("Error", "Gagal mengambil daftar menu", "error");
+                    }
+                });
             },
             error: function () {
                 Swal.fire("Error", "Gagal mengambil data user", "error");
@@ -85,7 +108,7 @@ $(document).ready(function () {
             url: "update_user.php",
             type: "POST",
             data: {
-                id: $("#editUserId").val(),
+                id: $("#edit_id").val(),
                 access: JSON.stringify(access)
             },
             success: function (res) {
@@ -98,4 +121,5 @@ $(document).ready(function () {
             }
         });
     });
+
 });
