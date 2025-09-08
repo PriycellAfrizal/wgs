@@ -32,7 +32,7 @@
 
             // Fetch and initialize Select2 data for tipeproduksi
             $.ajax({
-                url: 'produksi/get_namabarangbplant.php',
+                url: 'get_namabarangbplant.php',
                 method: 'GET',
                 dataType: 'json',
                 success: function(data) {
@@ -105,7 +105,7 @@ $(document).ready(function() {
   setTimeout(function () {
     $('.kodeproduksi').select2({
       ajax: {
-        url: 'produksi/get_kodeproduksi.php', // Change the URL accordingly
+        url: 'get_kodeproduksi.php', // Change the URL accordingly
         dataType: 'json',
         delay: 250,
         processResults: function(data) {
@@ -134,7 +134,7 @@ $(document).ready(function() {
                     // Mengirim permintaan Ajax ke server untuk mendapatkan tgl_in dan tgl_out
                     $.ajax({
                       type: "POST",
-                      url: "produksi/get_Historysp.php", // Ganti dengan nama file PHP yang akan menghandle permintaan ini
+                      url: "get_Historysp.php", // Ganti dengan nama file PHP yang akan menghandle permintaan ini
                       data: {
                         nosp: nosp
                       },
@@ -158,7 +158,7 @@ $(document).ready(function() {
               // Make an AJAX request to get the corresponding kodebarang
               $.ajax({
                 type: "GET",
-                url: "produksi/get_kodebarang.php", // Replace with the actual server-side script to handle the data
+                url: "get_kodebarang.php", // Replace with the actual server-side script to handle the data
                 data: {
                   namabarang: selectedNamabarang
                 },
@@ -248,7 +248,7 @@ function saveAllData() {
     // Inisialisasi Select2
     $('.divisi').select2({
       ajax: {
-        url: 'produksi/get_divisi.php',
+        url: 'get_divisi.php',
         dataType: 'json',
         delay: 250,
         processResults: function (data) {
@@ -330,7 +330,7 @@ var uniqueIdKodeProduksi = 'kodeproduksi_' + rowCount;
  // Initialize Select2 for the newly added kodeproduksi select element
   $("#kodeproduksi_" + rowCount).select2({
     ajax: {
-      url: 'produksi/get_kodeproduksi.php', // Change the URL accordingly
+      url: '../get_kodeproduksi.php', // Change the URL accordingly
       dataType: 'json',
       delay: 250,
       processResults: function(data) {
@@ -361,7 +361,7 @@ var uniqueIdKodeProduksi = 'kodeproduksi_' + rowCount;
     // Make an AJAX request to get the corresponding SPK
     $.ajax({
       type: "GET",
-      url: "produksi/get_spk.php", // Replace with the actual server-side script to handle the data
+      url: "../get_spk.php", // Replace with the actual server-side script to handle the data
       data: { kodeproduksi: selectedKodeProduksi },
       dataType: 'json',
       success: function(response) {
@@ -386,7 +386,7 @@ function carispk(selectElement) {
     // Make an AJAX request to get the corresponding SPK
     $.ajax({
         type: "GET",
-        url: "produksi/get_spk.php", // Replace with the actual server-side script to handle the data
+        url: "../get_spk.php", // Replace with the actual server-side script to handle the data
         data: { kodeproduksi: selectedKodeProduksi },
         dataType: 'json',
         success: function(response) {
@@ -406,7 +406,7 @@ function carispk(selectElement) {
   $(".dynamic-select").select2({
     ajax: {
       // Your AJAX settings for namabarang
-      url: 'produksi/get_namabaranghiblow.php',
+      url: '../get_namabaranghiblow.php',
       dataType: 'json',
       delay: 250,
       processResults: function(data) {
@@ -431,7 +431,7 @@ function updateSatuan(selectElement) {
 
   // Send AJAX request to the PHP script to get satuan
   $.ajax({
-    url: 'produksi/get_satuandata.php', // Adjust the URL based on your server-side script
+    url: 'get_satuandata.php', // Adjust the URL based on your server-side script
     method: 'GET',
     dataType: 'json',
     data: {
@@ -455,7 +455,7 @@ function updateSatuan(selectElement) {
   // Initialize Select2 for divisi
   $("#divisi_" + rowCount).select2({
     ajax: {
-      url: 'produksi/get_divisi.php',
+      url: '../get_divisi.php',
       dataType: 'json',
       delay: 250,
       processResults: function(data) {
@@ -480,7 +480,7 @@ function updateSatuan(selectElement) {
 
   // Send AJAX request to the PHP script to get satuan
   $.ajax({
-    url: 'produksi/get_satuandata.php', // Adjust the URL based on your server-side script
+    url: 'get_satuandata.php', // Adjust the URL based on your server-side script
     method: 'GET',
     dataType: 'json',
     data: {
@@ -506,7 +506,7 @@ function carispk(selectElement) {
     // Make an AJAX request to get the corresponding SPK
     $.ajax({
         type: "GET",
-        url: "produksi/get_spk.php", // Replace with the actual server-side script to handle the data
+        url: "../get_spk.php", // Replace with the actual server-side script to handle the data
         data: { kodeproduksi: selectedKodeProduksi },
         dataType: 'json',
         success: function(response) {
@@ -535,60 +535,68 @@ function carispk(selectElement) {
   }
 
 
-$(document).ready(function() {
-  // Inisialisasi Select2
-  $('.namabarang').select2({
-    ajax: {
-      url: 'produksi/get_namabarangbplant.php', // server-side script
-      dataType: 'json',
-      delay: 250,
-      data: function (params) {
-        return {
-          q: params.term // query pencarian dikirim sebagai ?q=
-        };
-      },
-      processResults: function(data) {
-        return {
-          results: data
-        };
-      },
-      cache: true
-    },
-    placeholder: 'Cari nama barang...',
-    minimumInputLength: 0, // boleh langsung tanpa input
-    allowClear: true,
-    language: {
-      searching: function() {
-        return 'Mencari...';
-      },
-      noResults: function() {
-        return 'Tidak ditemukan hasil';
-      }
-    }
-  });
+            $(document).ready(function() {
+              // Inisialisasi Select2
+              $('.namabarang').select2({
+                ajax: {
+                  url: 'get_namabarangbplant.php',
+                  dataType: 'json',
+                  delay: 250,
+                  processResults: function(data) {
+                    return {
+                      results: data
+                    };
+                  },
+                  cache: true
+                },
+                language: {
+                  searching: function() {
+                    return 'Mencari...';
+                  }
+                },
 
-  // Event ketika pilihan berubah
-  $('.namabarang').on('change', function() {
-    var namabarang = $(this).val();
 
-    if (namabarang) {
-      // Ambil satuan lewat AJAX
-      $.ajax({
-        url: 'produksi/get_satuan.php',
-        method: 'GET',
-        dataType: 'json',
-        data: { namabarang: namabarang },
-        success: function(response) {
-          if (response && response.satuan) {
-            $('.satuan').val(response.satuan);
-          }
-        },
-        error: function(xhr, status, error) {
-          console.error('Gagal mengambil data satuan:', error);
-        }
-      });
-    } else {
-      $('.satuan').val('');
-    }
-  });
-});
+
+
+                placeholder: 'Cari nama barang...',
+                minimumInputLength: 0, // Allow search with an empty input
+                allowClear: true,
+                formatNoMatches: function() {
+                  return 'Tidak ditemukan hasil';
+                }
+              });
+
+
+
+              // Menambahkan event listener untuk menangani perubahan nilai pada Select2
+              $('.namabarang').on('change', function() {
+                // Mendapatkan elemen terpilih
+                var selectedElement = $('.namabarang').find(':selected');
+
+                // Memperbarui warna teks menjadi hitam
+                selectedElement.css('color', 'black');
+
+                // Mendapatkan nilai yang dipilih
+                var namabarang = $(this).val();
+
+                // Mengirimkan permintaan AJAX ke skrip PHP untuk mendapatkan satuan
+                $.ajax({
+                  url: 'get_satuan.php', // Adjust the URL based on your server-side script
+                  method: 'GET',
+                  dataType: 'json',
+                  data: {
+                    namabarang: namabarang
+                  },
+                  success: function(response) {
+                    // Memperbarui nilai kolom satuan
+                    $('.satuan').val(response.satuan);
+                  },
+                  error: function() {
+                    // Handle kesalahan jika permintaan gagal
+                    console.log('Gagal mengambil data satuan');
+                  }
+                });
+              });
+            });
+
+
