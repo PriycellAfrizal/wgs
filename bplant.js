@@ -23,7 +23,7 @@
 
     // Send AJAX request to the backend
     $.ajax({
-        url: 'ambilproduksibplant.php',
+        url: 'produksi/ambilproduksibplant.php',
         method: 'POST',
         data: { kodeproduksi: kodeproduksi }, // Send kodeproduksi as part of the POST request
         success: function(response) {
@@ -32,7 +32,7 @@
 
             // Fetch and initialize Select2 data for tipeproduksi
             $.ajax({
-                url: '../get_namabarangbplant.php',
+                url: 'get_namabarangbplant.php',
                 method: 'GET',
                 dataType: 'json',
                 success: function(data) {
@@ -69,7 +69,7 @@ $(document).ready(function() {
         // Mengirim data dengan AJAX ke file PHP untuk diupdate
         $.ajax({
             type: "POST",
-            url: "update_bplant.php",
+            url: "produksi/update_bplant.php",
             data: {
                 kodeproduksi: kodeproduksi,
                 tipeproduksi: tipeproduksi,
@@ -105,7 +105,7 @@ $(document).ready(function() {
   setTimeout(function () {
     $('.kodeproduksi').select2({
       ajax: {
-        url: '../get_kodeproduksi.php', // Change the URL accordingly
+        url: 'get_kodeproduksi.php', // Change the URL accordingly
         dataType: 'json',
         delay: 250,
         processResults: function(data) {
@@ -134,7 +134,7 @@ $(document).ready(function() {
                     // Mengirim permintaan Ajax ke server untuk mendapatkan tgl_in dan tgl_out
                     $.ajax({
                       type: "POST",
-                      url: "../get_Historysp.php", // Ganti dengan nama file PHP yang akan menghandle permintaan ini
+                      url: "get_Historysp.php", // Ganti dengan nama file PHP yang akan menghandle permintaan ini
                       data: {
                         nosp: nosp
                       },
@@ -158,7 +158,7 @@ $(document).ready(function() {
               // Make an AJAX request to get the corresponding kodebarang
               $.ajax({
                 type: "GET",
-                url: "../get_kodebarang.php", // Replace with the actual server-side script to handle the data
+                url: "get_kodebarang.php", // Replace with the actual server-side script to handle the data
                 data: {
                   namabarang: selectedNamabarang
                 },
@@ -248,7 +248,7 @@ function saveAllData() {
     // Inisialisasi Select2
     $('.divisi').select2({
       ajax: {
-        url: '../get_divisi.php',
+        url: 'get_divisi.php',
         dataType: 'json',
         delay: 250,
         processResults: function (data) {
@@ -330,7 +330,7 @@ var uniqueIdKodeProduksi = 'kodeproduksi_' + rowCount;
  // Initialize Select2 for the newly added kodeproduksi select element
   $("#kodeproduksi_" + rowCount).select2({
     ajax: {
-      url: '../get_kodeproduksi.php', // Change the URL accordingly
+      url: 'get_kodeproduksi.php', // Change the URL accordingly
       dataType: 'json',
       delay: 250,
       processResults: function(data) {
@@ -361,7 +361,7 @@ var uniqueIdKodeProduksi = 'kodeproduksi_' + rowCount;
     // Make an AJAX request to get the corresponding SPK
     $.ajax({
       type: "GET",
-      url: "../get_spk.php", // Replace with the actual server-side script to handle the data
+      url: "get_spk.php", // Replace with the actual server-side script to handle the data
       data: { kodeproduksi: selectedKodeProduksi },
       dataType: 'json',
       success: function(response) {
@@ -386,7 +386,7 @@ function carispk(selectElement) {
     // Make an AJAX request to get the corresponding SPK
     $.ajax({
         type: "GET",
-        url: "../get_spk.php", // Replace with the actual server-side script to handle the data
+        url: "get_spk.php", // Replace with the actual server-side script to handle the data
         data: { kodeproduksi: selectedKodeProduksi },
         dataType: 'json',
         success: function(response) {
@@ -406,7 +406,7 @@ function carispk(selectElement) {
   $(".dynamic-select").select2({
     ajax: {
       // Your AJAX settings for namabarang
-      url: '../get_namabaranghiblow.php',
+      url: 'get_namabaranghiblow.php',
       dataType: 'json',
       delay: 250,
       processResults: function(data) {
@@ -431,7 +431,7 @@ function updateSatuan(selectElement) {
 
   // Send AJAX request to the PHP script to get satuan
   $.ajax({
-    url: '../get_satuandata.php', // Adjust the URL based on your server-side script
+    url: 'get_satuandata.php', // Adjust the URL based on your server-side script
     method: 'GET',
     dataType: 'json',
     data: {
@@ -455,7 +455,7 @@ function updateSatuan(selectElement) {
   // Initialize Select2 for divisi
   $("#divisi_" + rowCount).select2({
     ajax: {
-      url: '../get_divisi.php',
+      url: 'get_divisi.php',
       dataType: 'json',
       delay: 250,
       processResults: function(data) {
@@ -480,7 +480,7 @@ function updateSatuan(selectElement) {
 
   // Send AJAX request to the PHP script to get satuan
   $.ajax({
-    url: '../get_satuandata.php', // Adjust the URL based on your server-side script
+    url: 'get_satuandata.php', // Adjust the URL based on your server-side script
     method: 'GET',
     dataType: 'json',
     data: {
@@ -506,7 +506,7 @@ function carispk(selectElement) {
     // Make an AJAX request to get the corresponding SPK
     $.ajax({
         type: "GET",
-        url: "../get_spk.php", // Replace with the actual server-side script to handle the data
+        url: "get_spk.php", // Replace with the actual server-side script to handle the data
         data: { kodeproduksi: selectedKodeProduksi },
         dataType: 'json',
         success: function(response) {
@@ -539,7 +539,7 @@ function carispk(selectElement) {
               // Inisialisasi Select2
               $('.namabarang').select2({
                 ajax: {
-                  url: '../get_namabarangbplant.php',
+                  url: 'get_namabarangbplant.php',
                   dataType: 'json',
                   delay: 250,
                   processResults: function(data) {
@@ -581,7 +581,7 @@ function carispk(selectElement) {
 
                 // Mengirimkan permintaan AJAX ke skrip PHP untuk mendapatkan satuan
                 $.ajax({
-                  url: '../get_satuan.php', // Adjust the URL based on your server-side script
+                  url: 'get_satuan.php', // Adjust the URL based on your server-side script
                   method: 'GET',
                   dataType: 'json',
                   data: {
