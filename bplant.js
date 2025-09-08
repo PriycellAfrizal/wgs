@@ -23,7 +23,7 @@
 
     // Send AJAX request to the backend
     $.ajax({
-        url: 'produksi/ambilproduksibplant.php',
+        url: 'ambilproduksibplant.php',
         method: 'POST',
         data: { kodeproduksi: kodeproduksi }, // Send kodeproduksi as part of the POST request
         success: function(response) {
