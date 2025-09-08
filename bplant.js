@@ -535,68 +535,60 @@ function carispk(selectElement) {
   }
 
 
-            $(document).ready(function() {
-              // Inisialisasi Select2
-              $('.namabarang').select2({
-                ajax: {
-                  url: 'produksi/get_namabarangbplant.php',
-                  dataType: 'json',
-                  delay: 250,
-                  processResults: function(data) {
-                    return {
-                      results: data
-                    };
-                  },
-                  cache: true
-                },
-                language: {
-                  searching: function() {
-                    return 'Mencari...';
-                  }
-                },
+$(document).ready(function() {
+  // Inisialisasi Select2
+  $('.namabarang').select2({
+    ajax: {
+      url: 'produksi/get_namabarangbplant.php', // server-side script
+      dataType: 'json',
+      delay: 250,
+      data: function (params) {
+        return {
+          q: params.term // query pencarian dikirim sebagai ?q=
+        };
+      },
+      processResults: function(data) {
+        return {
+          results: data
+        };
+      },
+      cache: true
+    },
+    placeholder: 'Cari nama barang...',
+    minimumInputLength: 0, // boleh langsung tanpa input
+    allowClear: true,
+    language: {
+      searching: function() {
+        return 'Mencari...';
+      },
+      noResults: function() {
+        return 'Tidak ditemukan hasil';
+      }
+    }
+  });
 
+  // Event ketika pilihan berubah
+  $('.namabarang').on('change', function() {
+    var namabarang = $(this).val();
 
-
-
-                placeholder: 'Cari nama barang...',
-                minimumInputLength: 0, // Allow search with an empty input
-                allowClear: true,
-                formatNoMatches: function() {
-                  return 'Tidak ditemukan hasil';
-                }
-              });
-
-
-
-              // Menambahkan event listener untuk menangani perubahan nilai pada Select2
-              $('.namabarang').on('change', function() {
-                // Mendapatkan elemen terpilih
-                var selectedElement = $('.namabarang').find(':selected');
-
-                // Memperbarui warna teks menjadi hitam
-                selectedElement.css('color', 'black');
-
-                // Mendapatkan nilai yang dipilih
-                var namabarang = $(this).val();
-
-                // Mengirimkan permintaan AJAX ke skrip PHP untuk mendapatkan satuan
-                $.ajax({
-                  url: 'produksi/get_satuan.php', // Adjust the URL based on your server-side script
-                  method: 'GET',
-                  dataType: 'json',
-                  data: {
-                    namabarang: namabarang
-                  },
-                  success: function(response) {
-                    // Memperbarui nilai kolom satuan
-                    $('.satuan').val(response.satuan);
-                  },
-                  error: function() {
-                    // Handle kesalahan jika permintaan gagal
-                    console.log('Gagal mengambil data satuan');
-                  }
-                });
-              });
-            });
-
-
+    if (namabarang) {
+      // Ambil satuan lewat AJAX
+      $.ajax({
+        url: 'produksi/get_satuan.php',
+        method: 'GET',
+        dataType: 'json',
+        data: { namabarang: namabarang },
+        success: function(response) {
+          if (response && response.satuan) {
+            $('.satuan').val(response.satuan);
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('Gagal mengambil data satuan:', error);
+        }
+      });
+    } else {
+      $('.satuan').val('');
+    }
+  });
+});
