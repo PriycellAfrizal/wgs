@@ -539,7 +539,7 @@ function carispk(selectElement) {
               // Inisialisasi Select2
               $('.namabarang').select2({
                 ajax: {
-                  url: 'get_namabarangbplant.php',
+                  url: 'produksi/get_namabarangbplant.php',
                   dataType: 'json',
                   delay: 250,
                   processResults: function(data) {
