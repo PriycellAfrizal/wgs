@@ -1,12 +1,8 @@
-
-    $(document).ready(function () {
-
-        $('#myTable').DataTable(); // ID From dataTable 
-        $('#dataTable').DataTable(); // ID From dataTable 
-        $('#dataTableHover').DataTable(); // ID From dataTable with Hover
-
-
-    });
+$(document).ready(function () {
+    // Inisialisasi DataTables
+    $('#myTable').DataTable();       // ID From dataTable 
+    $('#dataTable').DataTable();     // ID From dataTable 
+    $('#dataTableHover').DataTable(); // ID From dataTable with Hover
 });
 
 function simpanmasterchasis() {
@@ -15,7 +11,7 @@ function simpanmasterchasis() {
     var skrbValue = document.getElementById("skrb").value;
 
     // Validasi apakah nilai type dan skrb tidak kosong
-    if (typeValue.trim() === "") {
+    if (typeValue.trim() === "" || skrbValue.trim() === "") {
         alert("Type Chassis dan SKRB Chassis tidak boleh kosong");
         return;
     }
@@ -39,7 +35,7 @@ function simpanmasterchasis() {
         // Handle respons dari server
         console.log(result);
 
-        // Menutup modal setelah berhasil menyimpan atau melakukan operasi lainnya
+        // Menutup modal setelah berhasil menyimpan
         $('#exampleModalLong').modal('hide');
 
         // Menampilkan alert berdasarkan respons dari server
@@ -47,7 +43,6 @@ function simpanmasterchasis() {
             alert("Data berhasil disimpan!");
             // Me-reload halaman setelah menampilkan alert
             location.reload();
-
         } else {
             alert("Terjadi kesalahan: " + result.message);
         }
