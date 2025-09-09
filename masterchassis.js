@@ -4,7 +4,7 @@ function simpanmasterchasis() {
     var skrbValue = document.getElementById("skrb").value;
 
     // Validasi apakah nilai type dan skrb tidak kosong
-    if (typeValue.trim() === "" || skrbValue.trim() === "") {
+    if (typeValue.trim() === "") {
         alert("Type Chassis dan SKRB Chassis tidak boleh kosong");
         return;
     }
@@ -28,7 +28,7 @@ function simpanmasterchasis() {
         // Handle respons dari server
         console.log(result);
 
-        // Menutup modal setelah berhasil menyimpan
+        // Menutup modal setelah berhasil menyimpan atau melakukan operasi lainnya
         $('#exampleModalLong').modal('hide');
 
         // Menampilkan alert berdasarkan respons dari server
@@ -36,6 +36,7 @@ function simpanmasterchasis() {
             alert("Data berhasil disimpan!");
             // Me-reload halaman setelah menampilkan alert
             location.reload();
+
         } else {
             alert("Terjadi kesalahan: " + result.message);
         }
