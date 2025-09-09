@@ -1,10 +1,3 @@
-$(document).ready(function () {
-    // Inisialisasi DataTables
-    $('#myTable').DataTable();       // ID From dataTable 
-    $('#dataTable').DataTable();     // ID From dataTable 
-    $('#dataTableHover').DataTable(); // ID From dataTable with Hover
-});
-
 function simpanmasterchasis() {
     // Mendapatkan nilai dari input dengan id "type" dan "skrb"
     var typeValue = document.getElementById("type").value;
