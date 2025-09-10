@@ -1,9 +1,13 @@
 $(document).ready(function () {
     $('#dataTable').DataTable({
         "ordering": false,  // user tidak bisa klik header
-        "orderFixed": {     // tapi tetap ada urutan default
+        "orderFixed": {     // tetap ada urutan default
             "pre": [[5, 'asc'], [1, 'desc']]
         },
+        "searching": true,   // pencarian tetap aktif
+        "paging": true,      // paging aktif
+        "info": true,        // info jumlah baris aktif
+        "pageLength": 20,    // default 20 baris
         "columnDefs": [
             {
                 "targets": [5], // Kolom status
@@ -184,6 +188,7 @@ function updateStatusSPK(spk) {
         }
     });
 }
+
 
 
 
