@@ -18,7 +18,7 @@ $(document).ready(function () {
         }
 
         $.ajax({
-            url: 'finance2/simpanmasterbank.php', // sesuaikan path!
+            url: 'wgsusermanagement/finance2/simpanmasterbank.php', // sesuaikan path!
             type: 'POST',
             data: { namabank: namabank },
             dataType: 'json', // otomatis parse JSON
