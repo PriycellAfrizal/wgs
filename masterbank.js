@@ -1,28 +1,28 @@
 $(document).ready(function () {
+    // Inisialisasi DataTables
     $('#myTable').DataTable(); 
     $('#dataTable').DataTable(); 
     $('#dataTableHover').DataTable(); 
-});
 
-document.getElementById('saveBank').addEventListener('click', function () {
-    var namabank = document.getElementById('namabank').value;
+    // Klik tombol save
+    $(document).on('click', '#saveBank', function () {
+        var namabank = $('#namabank').val().trim();
 
-    if (namabank === '') {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Oops...',
-            text: 'Nama Bank tidak boleh kosong!',
-        });
-        return;
-    }
+        if (namabank === '') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: 'Nama Bank tidak boleh kosong!',
+            });
+            return;
+        }
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'simpanmasterbank.php', true); // cukup ini karena file ada di folder yang sama
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            try {
-                var response = JSON.parse(xhr.responseText);
+        $.ajax({
+            url: 'finance2/simpanmasterbank.php', // sesuaikan path!
+            type: 'POST',
+            data: { namabank: namabank },
+            dataType: 'json', // otomatis parse JSON
+            success: function (response) {
                 if (response.success) {
                     Swal.fire({
                         icon: 'success',
@@ -41,11 +41,16 @@ document.getElementById('saveBank').addEventListener('click', function () {
                         text: response.message || 'Terjadi kesalahan, coba lagi.',
                     });
                 }
-            } catch (e) {
-                console.error("Respon bukan JSON:", xhr.responseText);
+            },
+            error: function (xhr, status, error) {
+                console.error("Ajax Error:", error);
+                console.log("Response:", xhr.responseText);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Server Error',
+                    text: 'Tidak bisa menghubungi server. Cek console log.',
+                });
             }
-        }
-    };
-
-    xhr.send('namabank=' + encodeURIComponent(namabank));
+        });
+    });
 });
