@@ -1,37 +1,29 @@
 $(document).ready(function () {
     $('#dataTable').DataTable({
-        "ordering": true, // biarkan sorting bekerja di background
-        "order": [[5, 'asc'], [1, 'desc']],  // Urutkan berdasarkan status dan tanggal
+        "ordering": false,  // user tidak bisa klik header
+        "orderFixed": {     // tapi tetap ada urutan default
+            "pre": [[5, 'asc'], [1, 'desc']]
+        },
         "columnDefs": [
             {
-                "targets": "_all",   // semua kolom
-                "orderable": false   // matikan panah sorting
-            },
-            {
                 "targets": [5], // Kolom status
-                "orderable": false, // hilangkan panah sorting di header status
                 "render": function (data, type, row) {
-                    if (type === 'display') {
-                        return data; // Tampilkan data asli
-                    }
-                    // Urutkan berdasarkan status: SPK PENDING < SPK ISSUED
-                    return data === 'SPK PENDING' ? 1 : 2; 
+                    if (type === 'display') return data;
+                    return data === 'SPK PENDING' ? 1 : 2;
                 }
             },
             {
                 "targets": [1], // Kolom tanggal
-                "orderable": false, // hilangkan panah sorting di header tanggal
                 "render": function (data, type) {
                     if (type === 'sort' || type === 'type') {
                         return moment(data, 'DD MMMM YYYY').format('YYYYMMDD');
                     }
-                    return data; 
+                    return data;
                 }
             }
         ]
     });
 });
-
 
  function closeModal() {
             document.getElementById('myModal').style.display = 'none';
@@ -192,6 +184,7 @@ function updateStatusSPK(spk) {
         }
     });
 }
+
 
 
 
