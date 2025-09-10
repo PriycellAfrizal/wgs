@@ -17,7 +17,7 @@ document.getElementById('saveBank').addEventListener('click', function () {
     }
 
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'simpanmasterbank.php', true); // cukup ini karena file ada di folder yang sama
+    xhr.open('POST', '../finance2/simpanmasterbank.php', true); // cukup ini karena file ada di folder yang sama
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
