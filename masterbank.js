@@ -16,7 +16,7 @@
         }
 
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'finance2/simpanmasterbank.php', true); // Endpoint PHP untuk menyimpan data
+        xhr.open('POST', 'wgsusermanagement/finance2/simpanmasterbank.php', true); // Endpoint PHP untuk menyimpan data
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
