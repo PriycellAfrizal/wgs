@@ -199,7 +199,7 @@ function openModal(button) {
                     }
                 };
 
-                xhttpQty.open("GET", window.location.origin + "purchaselocal/get_qtysplocal.php?nosp=" + item.nosp + "&namabarang=" + encodeURIComponent(item.namabarang), true);
+                xhttpQty.open("GET", window.location.origin + "/wgsusermanagement/get_qtysplocal.php?nosp=" + item.nosp + "&namabarang=" + encodeURIComponent(item.namabarang), true);
 
                 xhttpQty.send();
             });
@@ -537,5 +537,6 @@ function printDocument(nopo) {
         };
     };
 }
+
 
 
