@@ -29,7 +29,7 @@ function checkPO(button) {
     console.log("📄 PO Number:", poNumber);
 
     $.ajax({
-        url: 'compare_po_prices.php',
+        url: 'purchaselocal/compare_po_prices.php',
         type: 'POST',
         data: {
             po_number: poNumber,
@@ -199,7 +199,7 @@ function openModal(button) {
                     }
                 };
 
-                xhttpQty.open("GET", window.location.origin + "/wgs/get_qtysplocal.php?nosp=" + item.nosp + "&namabarang=" + encodeURIComponent(item.namabarang), true);
+                xhttpQty.open("GET", window.location.origin + "/wgs/purchaselocal/get_qtysplocal.php?nosp=" + item.nosp + "&namabarang=" + encodeURIComponent(item.namabarang), true);
 
                 xhttpQty.send();
             });
@@ -273,7 +273,7 @@ xhttpPembayaran.onreadystatechange = function() {
         }
     }
 };
-xhttpPembayaran.open("GET", "get_pembayaranttfp.php?nopo=" + nopo, true);
+xhttpPembayaran.open("GET", "purchaselocal/get_pembayaranttfp.php?nopo=" + nopo, true);
 xhttpPembayaran.send();
 
         }
@@ -283,7 +283,7 @@ xhttpPembayaran.send();
 
 
     
-    xhttp.open("GET", "get_Historypo.php?nopo=" + nopo, true);
+    xhttp.open("GET", "purchaselocal/get_Historypo.php?nopo=" + nopo, true);
     xhttp.send();
 }
 
@@ -296,7 +296,7 @@ function openBarangHistoryModal(namabarang)  {
     namabarangTitle.innerText = namabarang;  // Display the item name in the modal header
 
     // Fetch OC details for the given 'namabarang'
-    fetch(`get_history_po.php?namabarang=${encodeURIComponent(namabarang)}`)
+    fetch(`purchaselocal/get_history_po.php?namabarang=${encodeURIComponent(namabarang)}`)
         .then(response => response.json())  // Parse JSON response
         .then(data => {
             const orderDetailsTableBody = document.getElementById("orderDetailsTableBody");
@@ -521,7 +521,7 @@ function closeAllModals() {
 
 function printDocument(nopo) {
     // Misalkan Anda ingin mencetak halaman dengan URL tertentu
-    var printUrl = "print_pagepolocal.php?nopo=" + nopo;
+    var printUrl = "purchaselocal/print_pagepolocal.php?nopo=" + nopo;
     
     // Buka jendela baru untuk halaman cetak
     var printWindow = window.open(printUrl, '_blank');
@@ -537,3 +537,4 @@ function printDocument(nopo) {
         };
     };
 }
+
