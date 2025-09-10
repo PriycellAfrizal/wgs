@@ -1,56 +1,50 @@
-$(document).ready(function () {
-    // Inisialisasi DataTables
-    $('#myTable').DataTable(); 
-    $('#dataTable').DataTable(); 
-    $('#dataTableHover').DataTable(); 
+ $(document).ready(function () {
 
-    // Klik tombol save
-    $(document).on('click', '#saveBank', function () {
-        var namabank = $('#namabank').val().trim();
+        $('#myTable').DataTable(); // ID From dataTable 
+        $('#dataTable').DataTable(); // ID From dataTable 
+        $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+
+
+    });
+
+  document.getElementById('saveBank').addEventListener('click', function () {
+        var namabank = document.getElementById('namabank').value;
 
         if (namabank === '') {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Oops...',
-                text: 'Nama Bank tidak boleh kosong!',
-            });
+            alert('Nama Bank tidak boleh kosong');
             return;
         }
 
-        $.ajax({
-            url: 'wgsusermanagement/finance2/simpanmasterbank.php', // sesuaikan path!
-            type: 'POST',
-            data: { namabank: namabank },
-            dataType: 'json', // otomatis parse JSON
-            success: function (response) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'finance2/simpanmasterbank.php', true); // Endpoint PHP untuk menyimpan data
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var response = JSON.parse(xhr.responseText);
+
                 if (response.success) {
+                    // Menampilkan notifikasi sukses menggunakan SweetAlert
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil!',
                         text: 'Nama Bank berhasil disimpan.',
                         showConfirmButton: false,
-                        timer: 2000
+                        timer: 2000 // Notifikasi muncul selama 2 detik
                     }).then(function () {
+                        // Reload halaman setelah 2 detik
                         location.reload();
                     });
-                    $('#exampleModalLong').modal('hide');
+
+                    $('#exampleModalLong').modal('hide'); // Menutup modal setelah berhasil
                 } else {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
-                        text: response.message || 'Terjadi kesalahan, coba lagi.',
+                        text: 'Terjadi kesalahan, coba lagi.',
                     });
                 }
-            },
-            error: function (xhr, status, error) {
-                console.error("Ajax Error:", error);
-                console.log("Response:", xhr.responseText);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Server Error',
-                    text: 'Tidak bisa menghubungi server. Cek console log.',
-                });
             }
-        });
+        };
+
+        xhr.send('namabank=' + encodeURIComponent(namabank)); // Kirim data nama bank
     });
-});
