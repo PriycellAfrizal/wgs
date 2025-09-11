@@ -29,7 +29,7 @@ function checkPO(button) {
     console.log("📄 PO Number:", poNumber);
 
     $.ajax({
-        url: 'purchaselocal/compare_po_prices.php',
+        url: 'compare_po_prices.php',
         type: 'POST',
         data: {
             po_number: poNumber,
@@ -199,7 +199,7 @@ function openModal(button) {
                     }
                 };
 
-                xhttpQty.open("GET", window.location.origin + "purchaselocal/get_qtysplocal.php?nosp=" + item.nosp + "&namabarang=" + encodeURIComponent(item.namabarang), true);
+                xhttpQty.open("GET", window.location.origin + "get_qtysplocal.php?nosp=" + item.nosp + "&namabarang=" + encodeURIComponent(item.namabarang), true);
 
                 xhttpQty.send();
             });
@@ -273,7 +273,7 @@ xhttpPembayaran.onreadystatechange = function() {
         }
     }
 };
-xhttpPembayaran.open("GET", "purchaselocal/get_pembayaranttfp.php?nopo=" + nopo, true);
+xhttpPembayaran.open("GET", "get_pembayaranttfp.php?nopo=" + nopo, true);
 xhttpPembayaran.send();
 
         }
@@ -283,7 +283,7 @@ xhttpPembayaran.send();
 
 
     
-    xhttp.open("GET", "purchaselocal/get_Historypo.php?nopo=" + nopo, true);
+    xhttp.open("GET", "get_Historypo.php?nopo=" + nopo, true);
     xhttp.send();
 }
 
@@ -296,7 +296,7 @@ function openBarangHistoryModal(namabarang)  {
     namabarangTitle.innerText = namabarang;  // Display the item name in the modal header
 
     // Fetch OC details for the given 'namabarang'
-    fetch(`purchaselocal/get_history_po.php?namabarang=${encodeURIComponent(namabarang)}`)
+    fetch(`get_history_po.php?namabarang=${encodeURIComponent(namabarang)}`)
         .then(response => response.json())  // Parse JSON response
         .then(data => {
             const orderDetailsTableBody = document.getElementById("orderDetailsTableBody");
@@ -537,6 +537,7 @@ function printDocument(nopo) {
         };
     };
 }
+
 
 
 
