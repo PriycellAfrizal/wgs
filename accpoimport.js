@@ -390,7 +390,7 @@ if (data.totalall) {
             }
         };
         // Ganti URL berikut dengan URL yang sesuai untuk mengambil data PO berdasarkan nopo
-        xhttp.open("GET", "endpoint/get_Historypoimport.php?nopo=" + nopo, true);
+        xhttp.open("GET", "get_Historypoimport.php?nopo=" + nopo, true);
         xhttp.send();
     }
 
@@ -419,3 +419,4 @@ function printDocument(nopo) {
         };
     };
 }
+
