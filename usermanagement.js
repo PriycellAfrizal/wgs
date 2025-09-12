@@ -46,7 +46,6 @@ $(document).ready(function () {
             url: "get_user_detail.php",
             type: "GET",
             data: { id: userId },
-            
             dataType: "json",
             success: function (res) {
                 if (res.status !== "success") {
@@ -56,7 +55,8 @@ $(document).ready(function () {
 
                 // Isi data user
                 $("#edit_id").val(res.data.id);
-                $("#nama").val(res.data.nama);
+                $("#editNama").val(res.data.nama); // hanya untuk ditampilkan
+                $("#nama").val($("#nama").val());   // nama login tetap dari hidden input
 
                 const accessData = res.data.akses || {};
 
@@ -84,19 +84,20 @@ $(document).ready(function () {
     $("#formEditUser").on("submit", function (e) {
         e.preventDefault();
 
-        let access = {};
+        let akses = {};
         $(".menu-check:checked").each(function () {
             const menuKey = $(this).data("menu");
             const feature = $(`.feature-select[data-menu="${menuKey}"]`).val();
-            access[menuKey] = feature;
+            akses[menuKey] = feature;
         });
 
         $.ajax({
             url: "update_user.php",
             type: "POST",
             data: {
-                id: $("#edit_id").val(),
-                access: JSON.stringify(access)
+                id: $("#editId").val(),
+                nama: $("#nama").val(),   // ← nama dari hidden input (echo PHP)
+                akses: akses              // ← kirim sebagai object, bukan string JSON
             },
             dataType: "json",
             success: function (res) {
@@ -114,4 +115,3 @@ $(document).ready(function () {
     });
 
 });
-
