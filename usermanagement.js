@@ -46,6 +46,7 @@ $(document).ready(function () {
             url: "get_user_detail.php",
             type: "GET",
             data: { id: userId },
+            
             dataType: "json",
             success: function (res) {
                 if (res.status !== "success") {
@@ -55,7 +56,7 @@ $(document).ready(function () {
 
                 // Isi data user
                 $("#edit_id").val(res.data.id);
-                $("#edit_nama").val(res.data.nama);
+                $("#nama").val(res.data.nama);
 
                 const accessData = res.data.akses || {};
 
@@ -113,3 +114,4 @@ $(document).ready(function () {
     });
 
 });
+
