@@ -1,6 +1,8 @@
 function simpanmasterunits() {
     // Mendapatkan nilai dari input dengan id "satuan"
     var satuanValue = document.getElementById("satuan").value;
+    
+    var namaValue = document.getElementById("nama").value;
 
     // Validasi apakah nilai satuan tidak kosong
     if (satuanValue.trim() === "") {
