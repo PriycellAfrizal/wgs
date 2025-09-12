@@ -1,22 +1,23 @@
 function simpanmasterunits() {
-    // Mendapatkan nilai dari input dengan id "satuan"
-    var satuanValue = document.getElementById("satuan").value;
-    
-    var namaValue = document.getElementById("nama").value;
+    var satuanValue = (document.getElementById("satuan").value || "").trim();
+    var namaValue   = (document.getElementById("nama").value || "").trim();
 
-    // Validasi apakah nilai satuan tidak kosong
-    if (satuanValue.trim() === "") {
+    if (satuanValue === "") {
         alert("Satuan tidak boleh kosong");
         return;
     }
+    if (namaValue === "") {
+        alert("Nama tidak boleh kosong");
+        return;
+    }
 
-    // Membuat objek data yang akan dikirimkan ke server
-  var data = {
-    satuan: satuanValue,
-    nama: namaValue
-};
+    var data = {
+        satuan: satuanValue,
+        nama: namaValue
+    };
 
-    // Mengirim permintaan AJAX ke server
+    console.log("Payload dikirim:", data);
+
     fetch('warehouse/simpanmasterunit.php', {
         method: 'POST',
         headers: {
@@ -26,25 +27,18 @@ function simpanmasterunits() {
     })
     .then(response => response.json())
     .then(result => {
-        // Handle respons dari server
-        console.log(result);
+        console.log("Response server:", result);
 
-        // Menutup modal setelah berhasil menyimpan atau melakukan operasi lainnya
-        $('#exampleModalLong').modal('hide');
-
-        // Menampilkan alert berdasarkan respons dari server
         if (result.status === "success") {
+            $('#exampleModalLong').modal('hide');
             alert("Data berhasil disimpan!");
-            // Me-reload halaman setelah menampilkan alert
             location.reload();
-
         } else {
             alert("Terjadi kesalahan: " + result.message);
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Fetch error:', error);
         alert('Terjadi kesalahan saat menyimpan data ke database');
     });
 }
-
