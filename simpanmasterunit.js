@@ -11,9 +11,10 @@ function simpanmasterunits() {
     }
 
     // Membuat objek data yang akan dikirimkan ke server
-    var data = {
-        satuan: satuanValue
-    };
+  var data = {
+    satuan: satuanValue,
+    nama: namaValue
+};
 
     // Mengirim permintaan AJAX ke server
     fetch('warehouse/simpanmasterunit.php', {
