@@ -55,7 +55,6 @@ $(document).ready(function () {
 
                 // Isi data user
                 $("#edit_id").val(res.data.id);
-                $("#editNama").val(res.data.nama); // hanya untuk ditampilkan
                 $("#nama").val($("#nama").val());   // nama login tetap dari hidden input
 
                 const accessData = res.data.akses || {};
@@ -115,3 +114,4 @@ $(document).ready(function () {
     });
 
 });
+
