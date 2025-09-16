@@ -72,6 +72,8 @@ function openEditModal(clickedElement) {
     const snData = clickedElement.getAttribute('data-sn') || '';
     const nama = clickedElement.getAttribute('data-nama') || 'Seseorang'; // ambil dari data-nama
 
+    
+
 
     const getSnPromise = snData ? Promise.resolve(snData.split(',')) : $.ajax({url:'warehouse/get_sn.php', dataType:'json'});
     const getTipePromise = tipe ? Promise.resolve(tipe.split(',')) : $.ajax({url:'warehouse/get_tipe.php', dataType:'json'});
@@ -122,8 +124,8 @@ function saveChanges() {
         classValue: $("#classEdit").val(),
         
         sn: $("#snEdit").val(),
-        
-        nama: $("#namaEdit").val()   // <--- Tambahkan ini
+        $("#namaEdit").val(clickedElement.getAttribute("data-nama"));
+
     };
 
     // Validasi
