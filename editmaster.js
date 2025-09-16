@@ -2,7 +2,10 @@ $(document).ready(function () {
     // ==========================
     // Inisialisasi Select2 Utama
     // ==========================
-    $('#class').select2({ allowClear: true }).append('<option value="" disabled selected>Class</option>');
+    $('#class').select2({ 
+        placeholder: 'Class',
+        allowClear: true 
+    });
     $.ajax({
         url: 'warehouse/get_classes.php',
         dataType: 'json',
@@ -13,7 +16,10 @@ $(document).ready(function () {
         }
     });
 
-    $('#satuan').select2({ allowClear: true }).append('<option value="" disabled selected>Unit</option>');
+    $('#satuan').select2({ 
+        placeholder: 'Unit',
+        allowClear: true 
+    });
     $.ajax({
         url: 'warehouse/get_mastersatuan.php',
         dataType: 'json',
@@ -46,8 +52,7 @@ $(document).ready(function () {
             language: { searching: function(){ return 'Mencari...'; } },
             placeholder: cfg.placeholder,
             minimumInputLength: 0,
-            allowClear: true,
-            formatNoMatches: function(){ return 'Tidak ditemukan hasil'; }
+            allowClear: true
         });
     });
 
@@ -70,45 +75,34 @@ function openEditModal(clickedElement) {
     const tipe = clickedElement.getAttribute('data-tipe');
     const classValue = clickedElement.getAttribute('data-class');
     const snData = clickedElement.getAttribute('data-sn') || '';
-    const nama = clickedElement.getAttribute('data-nama') || 'Seseorang'; // ambil dari data-nama
+    const namaLogin = "<?php echo $nama; ?>"; // dari PHP session login
 
-    
+    // Set input modal
+    $("#kodebarangEdit").val(kodebarang);
+    $("#namabarangEdit").val(namabarang);
+    $("#itemaliasEdit").val(itemalias);
+    $("#minimumstockEdit").val(minimumstock);
+    $("#maxstockEdit").val(maxstock);
+    $("#namaEdit").val(namaLogin); // ambil dari login
 
-    
+    // Set Select2
+    $("#satuanEdit").empty().append(new Option(satuan, satuan, true, true)).trigger('change');
+    $("#classEdit").empty().append(new Option(classValue, classValue, true, true)).trigger('change');
 
+    // Set SN
+    const snArray = snData ? snData.split(',') : [];
+    $("#snEdit").empty();
+    snArray.forEach(val => { $("#snEdit").append(new Option(val, val, true, true)); });
+    $("#snEdit").trigger('change');
 
-    const getSnPromise = snData ? Promise.resolve(snData.split(',')) : $.ajax({url:'warehouse/get_sn.php', dataType:'json'});
-    const getTipePromise = tipe ? Promise.resolve(tipe.split(',')) : $.ajax({url:'warehouse/get_tipe.php', dataType:'json'});
+    // Set Tipe
+    const tipeArray = tipe ? tipe.split(',') : [];
+    $("#tipeEdit").empty();
+    tipeArray.forEach(val => { $("#tipeEdit").append(new Option(val, val, true, true)); });
+    $("#tipeEdit").trigger('change');
 
-    Promise.all([getSnPromise, getTipePromise]).then(function(values){
-        const snArray = values[0];
-        const tipeArray = values[1];
-
-        // Set input modal
-        $("#kodebarangEdit").val(kodebarang);
-        $("#namabarangEdit").val(namabarang);
-        $("#itemaliasEdit").val(itemalias);
-        $("#minimumstockEdit").val(minimumstock);
-        $("#maxstockEdit").val(maxstock);
-        
-    // Set field modal
-    $("#namaEdit").val(nama);  // <-- otomatis dari login
-
-
-        // Set Select2
-        $("#satuanEdit").empty().append(new Option(satuan, satuan, true, true)).trigger('change');
-        $("#classEdit").empty().append(new Option(classValue, classValue, true, true)).trigger('change');
-
-        $("#snEdit").empty();
-        snArray.forEach(function(val){ $("#snEdit").append(new Option(val, val, true, true)); });
-        $("#snEdit").trigger('change');
-
-        $("#tipeEdit").empty();
-        tipeArray.forEach(function(val){ $("#tipeEdit").append(new Option(val, val, true, true)); });
-        $("#tipeEdit").trigger('change');
-
-        $("#exampleModalScrollable").modal("show");
-    }).catch(function(err){ console.error(err); });
+    // Tampilkan modal
+    $("#exampleModalScrollable").modal("show");
 }
 
 // ==========================
@@ -124,11 +118,8 @@ function saveChanges() {
         maxstock: $("#maxstockEdit").val(),
         tipe: $("#tipeEdit").val(),
         classValue: $("#classEdit").val(),
-        
         sn: $("#snEdit").val(),
-        
-    nama: $("#namaEdit").val()  // <-- ambil nilai langsung dari input
-
+        nama: $("#namaEdit").val() // ini yang penting agar tersimpan
     };
 
     // Validasi
