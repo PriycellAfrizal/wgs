@@ -8,36 +8,25 @@ function simpanmasterunits() {
         return;
     }
 
-    // Cek apakah unit sudah ada
+    // Kirim data langsung ke PHP tanpa pengecekan
     $.ajax({
-        url: 'warehouse/check_unit_existence.php',
-        type: 'POST',
-        data: { satuan: satuan },
+        type: "POST",
+        url: "warehouse/simpanmasterunit.php",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({ satuan: satuan }),
+        dataType: "json",
         success: function(response) {
-            if (response === "exists") {
-                alert("Unit sudah ada!");
-                $("#satuan").focus();
+            if (response.status === "success") {
+                $("#exampleModalLong").modal("hide");
+                alert(response.message);
+                location.reload(); // bisa diganti dengan reload DataTable jika mau
             } else {
-                // Simpan unit baru
-                $.ajax({
-                    type: "POST",
-                    url: "warehouse/simpanmasterunit.php",
-                    data: { satuan: satuan },
-                    success: function (res) {
-                        console.log(res);
-                        $("#exampleModalLong").modal("hide");
-                        alert("Unit berhasil disimpan!");
-                        location.reload(); // bisa diganti dengan update DataTable jika ingin tanpa reload
-                    },
-                    error: function (err) {
-                        console.error(err);
-                        alert("Terjadi kesalahan saat menyimpan unit.");
-                    }
-                });
+                alert("Terjadi kesalahan: " + response.message);
             }
         },
-        error: function() {
-            alert("Terjadi kesalahan saat mengecek unit.");
+        error: function(err) {
+            console.error(err);
+            alert("Terjadi kesalahan saat menyimpan unit.");
         }
     });
 }
