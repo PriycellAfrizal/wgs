@@ -1,8 +1,13 @@
 $(document).ready(function () {
-    // Inisialisasi Select2 jika dibutuhkan (di sini hanya input text, jadi opsional)
-    // $("#satuan").select2(); // hapus atau aktifkan jika memang select
-    
-    // Event tombol simpan
+    // Inisialisasi DataTables dengan columnDefs sederhana
+    $('#myTable, #dataTable, #dataTableHover').DataTable({
+        "columnDefs": [
+            { "targets": 0, "orderable": false },
+            { "targets": -1, "orderable": false }
+        ]
+    });
+
+    // Event tombol simpan unit
     $("#btnSimpanMaster").click(function () {
         simpanmasterunits();
     });
@@ -11,16 +16,14 @@ $(document).ready(function () {
 function simpanmasterunits() {
     var satuan = $("#satuan").val().trim();
 
-    // Validasi input kosong
     if (!satuan) {
         alert("Unit (Satuan) tidak boleh kosong!");
         $("#satuan").focus();
         return;
     }
 
-    // Cek apakah unit sudah ada di database
     $.ajax({
-        url: 'warehouse/check_unit_existence.php', // sesuaikan dengan file PHP Anda
+        url: 'warehouse/check_unit_existence.php',
         type: 'POST',
         data: { satuan: satuan },
         success: function(response) {
@@ -28,10 +31,9 @@ function simpanmasterunits() {
                 alert("Unit sudah ada!");
                 $("#satuan").focus();
             } else {
-                // Simpan unit baru
                 $.ajax({
                     type: "POST",
-                    url: "warehouse/simpanmasterunit.php", // sesuaikan dengan file PHP untuk simpan
+                    url: "warehouse/simpanmasterunit.php",
                     data: { satuan: satuan },
                     success: function (res) {
                         console.log(res);
