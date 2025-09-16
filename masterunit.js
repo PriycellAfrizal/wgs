@@ -1,11 +1,18 @@
 function simpanmasterunits() {
     var elSatuan = document.getElementById("satuan");
-    if (!elSatuan) { alert("Input satuan tidak ditemukan!"); return; }
+    if (!elSatuan) { 
+        alert("Input satuan tidak ditemukan!"); 
+        return; 
+    }
 
     var satuanValue = elSatuan.value.trim();
-    if (satuanValue === "") { alert("Satuan tidak boleh kosong"); return; }
+    if (satuanValue === "") { 
+        alert("Satuan tidak boleh kosong"); 
+        return; 
+    }
 
     var data = { satuan: satuanValue };
+
     fetch('warehouse/simpanmasterunit.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
