@@ -1,3 +1,8 @@
+
+    $('#myTable, #dataTable, #dataTableHover').DataTable();
+});
+
+
 $(document).ready(function () {
     // Inisialisasi elemen-elemen select2 (gantilah sesuai kebutuhan)
     $("#class").select2();
