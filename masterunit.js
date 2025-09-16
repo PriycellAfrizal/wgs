@@ -1,19 +1,14 @@
 function simpanmasterunits() {
     var satuanValue = (document.getElementById("satuan").value || "").trim();
-    var namaValue   = (document.getElementById("nama").value || "").trim();
 
     if (satuanValue === "") {
         alert("Satuan tidak boleh kosong");
         return;
     }
-    if (namaValue === "") {
-        alert("Nama tidak boleh kosong");
-        return;
-    }
 
+    // Hanya kirim satuan, nama otomatis dari session di PHP
     var data = {
-        satuan: satuanValue,
-        nama: namaValue
+        satuan: satuanValue
     };
 
     console.log("Payload dikirim:", data);
