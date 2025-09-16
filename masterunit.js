@@ -1,11 +1,18 @@
 function simpanmasterunits() {
-    var satuanValue = (document.getElementById("satuan").value || "").trim();
+    // Ambil element input
+    var elSatuan = document.getElementById("satuan");
+    if (!elSatuan) {
+        alert("Input satuan tidak ditemukan di halaman!");
+        return;
+    }
 
+    var satuanValue = elSatuan.value.trim();
     if (satuanValue === "") {
         alert("Satuan tidak boleh kosong");
         return;
     }
 
+    // Kirim data ke PHP
     var data = { satuan: satuanValue };
     console.log("Payload dikirim:", data);
 
