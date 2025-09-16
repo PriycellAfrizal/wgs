@@ -1,44 +1,53 @@
+$(document).ready(function () {
+    // Inisialisasi Select2 jika dibutuhkan (di sini hanya input text, jadi opsional)
+    // $("#satuan").select2(); // hapus atau aktifkan jika memang select
+    
+    // Event tombol simpan
+    $("#btnSimpanMaster").click(function () {
+        simpanmasterunits();
+    });
+});
+
 function simpanmasterunits() {
-    var satuanValue = (document.getElementById("satuan").value || "").trim();
-    var namaValue   = (document.getElementById("nama").value || "").trim();
+    var satuan = $("#satuan").val().trim();
 
-    if (satuanValue === "") {
-        alert("Satuan tidak boleh kosong");
-        return;
-    }
-    if (namaValue === "") {
-        alert("Nama tidak boleh kosong");
+    // Validasi input kosong
+    if (!satuan) {
+        alert("Unit (Satuan) tidak boleh kosong!");
+        $("#satuan").focus();
         return;
     }
 
-    var data = {
-        satuan: satuanValue,
-        nama: namaValue
-    };
-
-    console.log("Payload dikirim:", data);
-
-    fetch('warehouse/simpanmasterunit.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
+    // Cek apakah unit sudah ada di database
+    $.ajax({
+        url: 'warehouse/check_unit_existence.php', // sesuaikan dengan file PHP Anda
+        type: 'POST',
+        data: { satuan: satuan },
+        success: function(response) {
+            if (response === "exists") {
+                alert("Unit sudah ada!");
+                $("#satuan").focus();
+            } else {
+                // Simpan unit baru
+                $.ajax({
+                    type: "POST",
+                    url: "warehouse/simpanmasterunit.php", // sesuaikan dengan file PHP untuk simpan
+                    data: { satuan: satuan },
+                    success: function (res) {
+                        console.log(res);
+                        $("#exampleModalLong").modal("hide");
+                        alert("Unit berhasil disimpan!");
+                        location.reload();
+                    },
+                    error: function (err) {
+                        console.error(err);
+                        alert("Terjadi kesalahan saat menyimpan unit.");
+                    }
+                });
+            }
         },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(result => {
-        console.log("Response server:", result);
-
-        if (result.status === "success") {
-            $('#exampleModalLong').modal('hide');
-            alert("Data berhasil disimpan!");
-            location.reload();
-        } else {
-            alert("Terjadi kesalahan: " + result.message);
+        error: function() {
+            alert("Terjadi kesalahan saat mengecek unit.");
         }
-    })
-    .catch(error => {
-        console.error('Fetch error:', error);
-        alert('Terjadi kesalahan saat menyimpan data ke database');
     });
 }
