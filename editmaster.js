@@ -76,9 +76,6 @@ function openEditModal(clickedElement) {
     const classValue = clickedElement.getAttribute('data-class');
     const snData = clickedElement.getAttribute('data-sn') || '';
 
-    
-    const nama = namaLogin || 'Seseorang';
-
 
     // Set input modal
     $("#kodebarangEdit").val(kodebarang);
@@ -86,8 +83,6 @@ function openEditModal(clickedElement) {
     $("#itemaliasEdit").val(itemalias);
     $("#minimumstockEdit").val(minimumstock);
     $("#maxstockEdit").val(maxstock);
-    $("#namaEdit").val(namaLogin); // ambil dari login
-
     // Set Select2
     $("#satuanEdit").empty().append(new Option(satuan, satuan, true, true)).trigger('change');
     $("#classEdit").empty().append(new Option(classValue, classValue, true, true)).trigger('change');
@@ -121,8 +116,7 @@ function saveChanges() {
         maxstock: $("#maxstockEdit").val(),
         tipe: $("#tipeEdit").val(),
         classValue: $("#classEdit").val(),
-        sn: $("#snEdit").val(),
-        nama: $("#namaEdit").val() // ini yang penting agar tersimpan
+        sn: $("#snEdit").val()
     };
 
     // Validasi
