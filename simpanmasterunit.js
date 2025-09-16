@@ -1,14 +1,19 @@
 function simpanmasterunits() {
-    var satuan = $("#satuan").val().trim();
-
-    // Validasi input kosong
-    if (!satuan) {
-        alert("Unit (Satuan) tidak boleh kosong!");
-        $("#satuan").focus();
+    var satuanInput = document.getElementById("satuan");
+    if (!satuanInput) {
+        alert("Input satuan tidak ditemukan!");
         return;
     }
 
-    // Kirim data langsung ke PHP tanpa pengecekan
+    var satuan = satuanInput.value.trim();
+
+    if (!satuan) {
+        alert("Unit (Satuan) tidak boleh kosong!");
+        satuanInput.focus();
+        return;
+    }
+
+    // Kirim data ke PHP
     $.ajax({
         type: "POST",
         url: "warehouse/simpanmasterunit.php",
@@ -19,7 +24,7 @@ function simpanmasterunits() {
             if (response.status === "success") {
                 $("#exampleModalLong").modal("hide");
                 alert(response.message);
-                location.reload(); // bisa diganti dengan reload DataTable jika mau
+                location.reload();
             } else {
                 alert("Terjadi kesalahan: " + response.message);
             }
