@@ -70,6 +70,8 @@ function openEditModal(clickedElement) {
     const tipe = clickedElement.getAttribute('data-tipe');
     const classValue = clickedElement.getAttribute('data-class');
     const snData = clickedElement.getAttribute('data-sn') || '';
+    const nama = clickedElement.getAttribute('data-nama') || 'Seseorang'; // ambil dari data-nama
+
 
     const getSnPromise = snData ? Promise.resolve(snData.split(',')) : $.ajax({url:'warehouse/get_sn.php', dataType:'json'});
     const getTipePromise = tipe ? Promise.resolve(tipe.split(',')) : $.ajax({url:'warehouse/get_tipe.php', dataType:'json'});
@@ -84,7 +86,10 @@ function openEditModal(clickedElement) {
         $("#itemaliasEdit").val(itemalias);
         $("#minimumstockEdit").val(minimumstock);
         $("#maxstockEdit").val(maxstock);
-        $("#namaEdit").val(nama); // <-- otomatis default Seseorang
+        
+    // Set field modal
+    $("#namaEdit").val(nama);  // <-- otomatis dari login
+
 
         // Set Select2
         $("#satuanEdit").empty().append(new Option(satuan, satuan, true, true)).trigger('change');
