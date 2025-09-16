@@ -75,7 +75,10 @@ function openEditModal(clickedElement) {
     const tipe = clickedElement.getAttribute('data-tipe');
     const classValue = clickedElement.getAttribute('data-class');
     const snData = clickedElement.getAttribute('data-sn') || '';
-    const namaLogin = "<?php echo $nama; ?>"; // dari PHP session login
+
+    
+    const nama = namaLogin || 'Seseorang';
+
 
     // Set input modal
     $("#kodebarangEdit").val(kodebarang);
