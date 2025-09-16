@@ -84,6 +84,7 @@ function openEditModal(clickedElement) {
         $("#itemaliasEdit").val(itemalias);
         $("#minimumstockEdit").val(minimumstock);
         $("#maxstockEdit").val(maxstock);
+        $("#namaEdit").val(nama); // <-- otomatis default Seseorang
 
         // Set Select2
         $("#satuanEdit").empty().append(new Option(satuan, satuan, true, true)).trigger('change');
