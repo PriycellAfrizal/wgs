@@ -256,6 +256,7 @@ function openEditModal(clickedElement) {
         $("#itemaliasEdit").val(itemalias);
         $("#minimumstockEdit").val(minimumstock);
         $("#maxstockEdit").val(maxstock);
+    $("#namaEdit").val(data.nama || 'Seseorang'); 
 
         // Set the value in the Select2 dropdown for satuanEdit
         var satuanEditSelect = $("#satuanEdit");
@@ -318,8 +319,8 @@ function saveChanges() {
     var tipe = $("#tipeEdit").val();
     var classValue = $("#classEdit").val();
     var snData = $("#snEdit").val();
-    
-    var nama = $("#nama").val();
+    var nama = $("#namaEdit").val();
+
     
 
     // Validasi data kosong atau placeholder sebelum mengirim data
