@@ -1,27 +1,14 @@
-$(document).ready(function () {
-    // Inisialisasi DataTables dengan columnDefs sederhana
-    $('#myTable, #dataTable, #dataTableHover').DataTable({
-        "columnDefs": [
-            { "targets": 0, "orderable": false },
-            { "targets": -1, "orderable": false }
-        ]
-    });
-
-    // Event tombol simpan unit
-    $("#btnSimpanMaster").click(function () {
-        simpanmasterunits();
-    });
-});
-
 function simpanmasterunits() {
     var satuan = $("#satuan").val().trim();
 
+    // Validasi input kosong
     if (!satuan) {
         alert("Unit (Satuan) tidak boleh kosong!");
         $("#satuan").focus();
         return;
     }
 
+    // Cek apakah unit sudah ada
     $.ajax({
         url: 'warehouse/check_unit_existence.php',
         type: 'POST',
@@ -31,6 +18,7 @@ function simpanmasterunits() {
                 alert("Unit sudah ada!");
                 $("#satuan").focus();
             } else {
+                // Simpan unit baru
                 $.ajax({
                     type: "POST",
                     url: "warehouse/simpanmasterunit.php",
@@ -39,7 +27,7 @@ function simpanmasterunits() {
                         console.log(res);
                         $("#exampleModalLong").modal("hide");
                         alert("Unit berhasil disimpan!");
-                        location.reload();
+                        location.reload(); // bisa diganti dengan update DataTable jika ingin tanpa reload
                     },
                     error: function (err) {
                         console.error(err);
