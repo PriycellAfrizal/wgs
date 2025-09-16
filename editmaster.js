@@ -318,6 +318,9 @@ function saveChanges() {
     var tipe = $("#tipeEdit").val();
     var classValue = $("#classEdit").val();
     var snData = $("#snEdit").val();
+    
+    var nama = $("#nama").val();
+    
 
     // Validasi data kosong atau placeholder sebelum mengirim data
     if (
@@ -349,7 +352,8 @@ function saveChanges() {
     maxstock: maxstock,
     tipe: tipe,
     classValue: classValue,  // Include classValue in the data object
-    sn: snData
+    sn: snData,
+      nama : nama
 };
 
 
