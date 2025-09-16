@@ -74,6 +74,8 @@ function openEditModal(clickedElement) {
 
     
 
+    
+
 
     const getSnPromise = snData ? Promise.resolve(snData.split(',')) : $.ajax({url:'warehouse/get_sn.php', dataType:'json'});
     const getTipePromise = tipe ? Promise.resolve(tipe.split(',')) : $.ajax({url:'warehouse/get_tipe.php', dataType:'json'});
@@ -124,7 +126,8 @@ function saveChanges() {
         classValue: $("#classEdit").val(),
         
         sn: $("#snEdit").val(),
-        $("#namaEdit").val(clickedElement.getAttribute("data-nama"));
+        
+    nama: $("#namaEdit").val()  // <-- ambil nilai langsung dari input
 
     };
 
