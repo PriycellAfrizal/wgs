@@ -192,6 +192,9 @@ $(document).ready(function () {
 
 
 function openEditModal(clickedElement) {
+
+
+    function openEditModal(clickedElement) {
     var kodebarang = clickedElement.getAttribute('data-kodebarang');
     var namabarang = clickedElement.getAttribute('data-namabarang');
     var satuan = clickedElement.getAttribute('data-satuan');
@@ -199,7 +202,9 @@ function openEditModal(clickedElement) {
     var minimumstock = clickedElement.getAttribute('data-minimumstock');
     var maxstock = clickedElement.getAttribute('data-maxstock');
     var tipe = clickedElement.getAttribute('data-tipe');
-    var classValue = clickedElement.getAttribute('data-class'); // Menangkap nilai class
+    var classValue = clickedElement.getAttribute('data-class');
+    var nama = clickedElement.getAttribute('data-nama') || 'Seseorang';
+
 
     // Buat promise untuk mendapatkan nilai sn
     var getSnPromise = new Promise(function (resolve, reject) {
@@ -252,11 +257,12 @@ function openEditModal(clickedElement) {
 
         // Isi input di dalam modal dengan data dari baris yang bersangkutan
         $("#kodebarangEdit").val(kodebarang);
-        $("#namabarangEdit").val(namabarang);
-        $("#itemaliasEdit").val(itemalias);
-        $("#minimumstockEdit").val(minimumstock);
-        $("#maxstockEdit").val(maxstock);
-    $("#namaEdit").val(data.nama || 'Seseorang'); 
+$("#namabarangEdit").val(namabarang);
+$("#itemaliasEdit").val(itemalias);
+$("#minimumstockEdit").val(minimumstock);
+$("#maxstockEdit").val(maxstock);
+$("#namaEdit").val(nama); // <-- pakai value dari atribut
+
 
         // Set the value in the Select2 dropdown for satuanEdit
         var satuanEditSelect = $("#satuanEdit");
