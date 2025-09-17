@@ -3,27 +3,23 @@
 // ========================
 function toggleAllCheckboxes(isChecked) {
     const checkboxes = document.querySelectorAll('.select-row');
-    checkboxes.forEach((checkbox) => {
-        checkbox.checked = isChecked;
-        toggleRowHighlight(checkbox.closest('tr'), checkbox.checked);
+    checkboxes.forEach(cb => {
+        cb.checked = isChecked;
+        toggleRowHighlight(cb.closest('tr'), cb.checked);
     });
     document.getElementById('select-all').checked = isChecked;
     document.getElementById('select-all-footer').checked = isChecked;
 }
 
-document.getElementById('select-all').addEventListener('click', function(e) {
-    toggleAllCheckboxes(e.target.checked);
-});
-document.getElementById('select-all-footer').addEventListener('click', function(e) {
-    toggleAllCheckboxes(e.target.checked);
-});
+document.getElementById('select-all').addEventListener('click', e => toggleAllCheckboxes(e.target.checked));
+document.getElementById('select-all-footer').addEventListener('click', e => toggleAllCheckboxes(e.target.checked));
 
 // ========================
 // Klik baris = toggle checkbox
 // ========================
 document.querySelectorAll('#datasp tbody tr').forEach(row => {
-    row.addEventListener('click', function(event) {
-        if (event.target.type !== "checkbox") { 
+    row.addEventListener('click', function(e) {
+        if (e.target.type !== "checkbox") {
             const checkbox = this.querySelector('.select-row');
             checkbox.checked = !checkbox.checked;
             toggleRowHighlight(this, checkbox.checked);
@@ -46,7 +42,7 @@ function updateSelectAllStatus() {
 }
 
 // ========================
-// DataTables custom sort untuk kolom status
+// DataTables
 // ========================
 $(document).ready(function () {
     $('#dataTable').DataTable({
@@ -54,7 +50,7 @@ $(document).ready(function () {
         "columnDefs": [{
             "targets": [6],
             "orderData": [6],
-            "render": function (data, type, row) {
+            "render": function(data) {
                 switch (data) {
                     case 'Pending Approved': return 1;
                     case 'Approval RND': return 2;
@@ -86,65 +82,55 @@ document.getElementById('updateStatusButton').addEventListener('click', function
         return;
     }
 
-    let selectedNosps = [];
-    selectedRows.forEach(cb => selectedNosps.push(cb.value));
+    const selectedNosps = Array.from(selectedRows).map(cb => cb.value);
 
     Swal.fire({
-        title: 'Are you sure?',
-        html: 'Do you want to approve the selected SP(s): <br><b style="color: black;">' + selectedNosps.join(', ') + '</b>?',
-        icon: 'warning',
+        title: 'Confirm Approval',
+        html: 'Do you want to approve the selected SP(s)?<br><b>' + selectedNosps.join(', ') + '</b>',
+        icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, approve it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const formData = new URLSearchParams();
-            selectedNosps.forEach(nosp => formData.append("nosp[]", nosp));
+        confirmButtonText: 'Yes, approve!',
+        cancelButtonText: 'Cancel',
+    }).then(result => {
+        if (!result.isConfirmed) return;
 
-            fetch("updatestatussplocal.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: formData.toString()
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log("DEBUG response:", data);
+        const formData = new URLSearchParams();
+        selectedNosps.forEach(n => formData.append('nosp[]', n));
 
-                if (data.status === "success") {
-                    let msg = data.message;
+        fetch('updatestatussplocal.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData.toString()
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log("DEBUG response:", data);
 
-                    // Tambahkan info baris yang diupdate
-                    if (data.updated && Object.keys(data.updated).length > 0) {
-                        const updates = Object.entries(data.updated)
-                            .map(([nosp, info]) => `${nosp}: splocal(${info.splocal_affected}), splocalcopy(${info.splocalcopy_affected})`)
-                            .join('<br>');
-                        msg += '<br><b>Updated:</b><br>' + updates;
-                    }
-
-                    // Tambahkan info skipped
-                    if (data.skipped && Object.keys(data.skipped).length > 0) {
-                        const skips = Object.entries(data.skipped)
-                            .map(([nosp, reason]) => `${nosp}: ${reason}`)
-                            .join('<br>');
-                        msg += '<br><i>Skipped:</i><br>' + skips;
-                    }
-
-                    Swal.fire({
-                        title: 'Updated!',
-                        html: msg,
-                        icon: 'success',
-                        timer: 4000,
-                        showConfirmButton: false
-                    }).then(() => location.reload());
-                } else {
-                    Swal.fire('Error!', data.message || 'Terjadi kesalahan', 'error');
+            // ======================== Alert baru
+            let htmlMsg = '';
+            if (data.updated && Object.keys(data.updated).length > 0) {
+                htmlMsg += '<b>Updated:</b><br>';
+                for (const [nosp, info] of Object.entries(data.updated)) {
+                    htmlMsg += `NO SP ${nosp}: splocal(${info.splocal_affected}), splocalcopy(${info.splocalcopy_affected})<br>`;
                 }
-            })
-            .catch(err => {
-                console.error("Fetch error:", err);
-                Swal.fire('Error!', 'Koneksi gagal ke server', 'error');
-            });
-        }
+            }
+            if (data.skipped && Object.keys(data.skipped).length > 0) {
+                htmlMsg += '<br><b>Skipped:</b><br>';
+                for (const [nosp, reason] of Object.entries(data.skipped)) {
+                    htmlMsg += `NO SP ${nosp}: ${reason}<br>`;
+                }
+            }
+
+            Swal.fire({
+                title: data.status === 'success' ? 'Success' : 'Completed with errors',
+                html: htmlMsg || data.message,
+                icon: data.status === 'success' ? 'success' : 'warning',
+                showConfirmButton: true
+            }).then(() => location.reload());
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire('Error', 'Connection to server failed', 'error');
+        });
     });
 });
