@@ -98,7 +98,6 @@ function openEditModal(clickedElement) {
 
     $("#exampleModalScrollable").modal("show");
 }
-
 function saveChanges() {
     const data = {
         kodebarang: $("#kodebarangEdit").val(),
@@ -110,15 +109,17 @@ function saveChanges() {
         tipe: $("#tipeEdit").val(),
         classValue: $("#classEdit").val(),
         sn: $("#snEdit").val()
+        // ⚠️ tidak perlu kirim namaedit, langsung ambil dari session di PHP
     };
 
     // Validasi
-    if (!data.namabarang || !data.itemalias || !data.classValue || !data.satuan || !data.tipe || !data.sn || !data.minimumstock || !data.maxstock){
+    if (!data.namabarang || !data.itemalias || !data.classValue || !data.satuan || 
+        !data.tipe || !data.sn || !data.minimumstock || !data.maxstock) {
         alert("Lengkapi semua data sebelum menyimpan perubahan!");
         return;
     }
 
-    if (parseInt(data.maxstock) < parseInt(data.minimumstock)){
+    if (parseInt(data.maxstock) < parseInt(data.minimumstock)) {
         alert("Nilai MaxStock harus lebih besar atau sama dengan MinimumStock!");
         return;
     }
@@ -128,7 +129,7 @@ function saveChanges() {
         url: "warehouse/updatedatamaster.php",
         data: data,
         success: function(response){
-            console.log(response);
+            console.log("Server Response:", response);
             $("#exampleModalScrollable").modal("hide");
             alert("Perubahan berhasil disimpan!");
             location.reload();
