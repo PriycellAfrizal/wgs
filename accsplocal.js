@@ -1,57 +1,54 @@
-// ========================
-// Checkbox Select All
-// ========================
-function toggleAllCheckboxes(isChecked) {
-    const checkboxes = document.querySelectorAll('.select-row');
-    checkboxes.forEach(cb => {
-        cb.checked = isChecked;
-        toggleRowHighlight(cb.closest('tr'), cb.checked);
+$(document).ready(function() {
+    // ========================
+    // Checkbox Select All
+    // ========================
+    function toggleAllCheckboxes(isChecked) {
+        $('.select-row').each(function() {
+            this.checked = isChecked;
+            toggleRowHighlight($(this).closest('tr'), isChecked);
+        });
+        $('#select-all').prop('checked', isChecked);
+        $('#select-all-footer').prop('checked', isChecked);
+    }
+
+    $('#select-all, #select-all-footer').on('click', function() {
+        toggleAllCheckboxes(this.checked);
     });
-    document.getElementById('select-all').checked = isChecked;
-    document.getElementById('select-all-footer').checked = isChecked;
-}
 
-document.getElementById('select-all').addEventListener('click', e => toggleAllCheckboxes(e.target.checked));
-document.getElementById('select-all-footer').addEventListener('click', e => toggleAllCheckboxes(e.target.checked));
-
-// ========================
-// Klik baris = toggle checkbox
-// ========================
-document.querySelectorAll('#datasp tbody tr').forEach(row => {
-    row.addEventListener('click', event => {
-        if (event.target.type !== "checkbox") {
-            const cb = row.querySelector('.select-row');
-            cb.checked = !cb.checked;
-            toggleRowHighlight(row, cb.checked);
+    // ========================
+    // Klik baris = toggle checkbox
+    // ========================
+    $('#datasp tbody tr').on('click', function(e) {
+        if (e.target.type !== 'checkbox') {
+            const cb = $(this).find('.select-row');
+            cb.prop('checked', !cb.prop('checked'));
+            toggleRowHighlight($(this), cb.prop('checked'));
             updateSelectAllStatus();
         }
     });
-    row.style.cursor = 'pointer';
-});
 
-function toggleRowHighlight(row, isSelected) {
-    row.style.backgroundColor = isSelected ? '#007bff' : '';
-    row.style.color = isSelected ? 'white' : '';
-}
+    function toggleRowHighlight(row, selected) {
+        if(selected){
+            row.css({'background-color':'#007bff','color':'white'});
+        }else{
+            row.css({'background-color':'','color':''});
+        }
+    }
 
-function updateSelectAllStatus() {
-    const checkboxes = document.querySelectorAll('.select-row');
-    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-    document.getElementById('select-all').checked = allChecked;
-    document.getElementById('select-all-footer').checked = allChecked;
-}
+    function updateSelectAllStatus() {
+        const allChecked = $('.select-row').length === $('.select-row:checked').length;
+        $('#select-all, #select-all-footer').prop('checked', allChecked);
+    }
 
-// ========================
-// DataTables custom sort untuk kolom status
-// ========================
-$(document).ready(function() {
+    // ========================
+    // DataTables
+    // ========================
     $('#dataTable').DataTable({
-        "order": [[6, 'asc']],
-        "columnDefs": [{
+        "order": [[6,'asc']],
+        "columnDefs":[{
             "targets": [6],
-            "orderData": [6],
-            "render": function(data) {
-                switch (data) {
+            "render": function(data,type,row){
+                switch(data){
                     case 'Pending Approved': return 1;
                     case 'Approval RND': return 2;
                     case 'PO ISSUED': return 3;
@@ -60,79 +57,46 @@ $(document).ready(function() {
                 }
             }
         }],
-        "createdRow": function(row, data) {
-            $(row).attr('data-original-status', data[6]);
+        "createdRow": function(row,data){
+            $(row).attr('data-original-status',data[6]);
         },
-        "drawCallback": function() {
-            $('#dataTable tbody tr').each(function() {
-                var originalStatus = $(this).data('original-status');
-                $(this).find('td:eq(6)').text(originalStatus);
+        "drawCallback": function(){
+            $('#dataTable tbody tr').each(function(){
+                $(this).find('td:eq(6)').text($(this).data('original-status'));
             });
         }
     });
-});
 
-// ========================
-// Update Status Button
-// ========================
-document.getElementById('updateStatusButton').addEventListener('click', function() {
-    const selectedNosps = Array.from(document.querySelectorAll('.select-row:checked')).map(cb => cb.value);
+    // ========================
+    // Update Status Button
+    // ========================
+    $('#updateStatusButton').on('click', function() {
+        const selectedNosps = $('.select-row:checked').map(function(){ return this.value; }).get();
+        if(selectedNosps.length === 0){
+            Swal.fire('No Selection','Please select at least one row','warning');
+            return;
+        }
 
-    if (selectedNosps.length === 0) {
-        Swal.fire('No Selection', 'Please select at least one row to update.', 'warning');
-        return;
-    }
-
-    Swal.fire({
-        title: 'Are you sure?',
-        html: 'Do you want to approve the selected SP(s): <br><b style="color:black;">' + selectedNosps.join(', ') + '</b>?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, approve!'
-    }).then(result => {
-        if (!result.isConfirmed) return;
-
-        const formData = new URLSearchParams();
-        selectedNosps.forEach(nosp => formData.append('nosp[]', nosp));
-
-        fetch('updatestatussplocal.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formData.toString()
-        })
-        .then(res => res.json())
-        .then(data => {
-            console.log('DEBUG response:', data);
-
-            let htmlMsg = '';
-            if (data.updated && Object.keys(data.updated).length > 0) {
-                htmlMsg += '<b>Updated:</b><br>';
-                for (const [nosp, info] of Object.entries(data.updated)) {
-                    htmlMsg += `NO SP ${nosp} - splocal: ${info.splocal_affected}, splocalcopy: ${info.splocalcopy_affected}<br>`;
-                }
+        Swal.fire({
+            title:'Confirm Approve',
+            html:'Approve SP(s): <b style="color:black;">'+selectedNosps.join(', ')+'</b>?',
+            icon:'warning',
+            showCancelButton:true,
+            confirmButtonColor:'#3085d6',
+            cancelButtonColor:'#d33',
+            confirmButtonText:'Yes'
+        }).then((result)=>{
+            if(result.isConfirmed){
+                $.post('updatestatussplocal.php',{nosp:selectedNosps},function(res){
+                    console.log(res);
+                    if(res.status==='success'){
+                        let message = `Updated: ${Object.keys(res.updated).length} | Skipped: ${Object.keys(res.skipped).length}`;
+                        Swal.fire('Done', message,'success').then(()=>location.reload());
+                    }else{
+                        Swal.fire('Error', res.message,'error');
+                    }
+                },'json').fail(function(){ Swal.fire('Error','Server error','error'); });
             }
-            if (data.skipped && Object.keys(data.skipped).length > 0) {
-                htmlMsg += '<b>Skipped:</b><br>';
-                for (const [nosp, reason] of Object.entries(data.skipped)) {
-                    htmlMsg += `NO SP ${nosp} (${reason})<br>`;
-                }
-            }
-
-            let icon = data.status === 'success' ? 'success' : 'warning';
-            if (data.status === 'error') icon = 'error';
-
-            Swal.fire({
-                title: data.status === 'success' ? 'Success' : 'Notice',
-                html: htmlMsg || data.message,
-                icon: icon,
-                showConfirmButton: true
-            }).then(() => location.reload());
-        })
-        .catch(err => {
-            console.error('Fetch error:', err);
-            Swal.fire('Error!', 'Koneksi gagal ke server', 'error');
         });
     });
 });
