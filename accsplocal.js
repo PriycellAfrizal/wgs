@@ -99,22 +99,47 @@ document.getElementById('updateStatusButton').addEventListener('click', function
         confirmButtonText: 'Yes, approve it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            // 🔹 Kirim string dipisah koma, sesuai PHP kamu
+            const formData = new URLSearchParams();
+            selectedNosps.forEach(nosp => formData.append("nosp[]", nosp));
+
             fetch("updatestatussplocal.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: "nosp=" + encodeURIComponent(selectedNosps.join(","))
+                body: formData.toString()
             })
-            .then(res => res.text()) // PHP kamu echo text biasa
-            .then(response => {
-                console.log("DEBUG response:", response);
-                Swal.fire({
-                    title: 'Updated!',
-                    html: '<b style="color: black;">' + response + '</b>',
-                    icon: 'success',
-                    timer: 3000,
-                    showConfirmButton: false
-                }).then(() => location.reload());
+            .then(res => res.json())
+            .then(data => {
+                console.log("DEBUG response:", data);
+
+                if (data.status === "success") {
+                    let msg = data.message;
+
+                    // Tambahkan info baris yang diupdate
+                    if (data.updated && Object.keys(data.updated).length > 0) {
+                        const updates = Object.entries(data.updated)
+                            .map(([nosp, info]) => `${nosp}: splocal(${info.splocal_affected}), splocalcopy(${info.splocalcopy_affected})`)
+                            .join('<br>');
+                        msg += '<br><b>Updated:</b><br>' + updates;
+                    }
+
+                    // Tambahkan info skipped
+                    if (data.skipped && Object.keys(data.skipped).length > 0) {
+                        const skips = Object.entries(data.skipped)
+                            .map(([nosp, reason]) => `${nosp}: ${reason}`)
+                            .join('<br>');
+                        msg += '<br><i>Skipped:</i><br>' + skips;
+                    }
+
+                    Swal.fire({
+                        title: 'Updated!',
+                        html: msg,
+                        icon: 'success',
+                        timer: 4000,
+                        showConfirmButton: false
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire('Error!', data.message || 'Terjadi kesalahan', 'error');
+                }
             })
             .catch(err => {
                 console.error("Fetch error:", err);
