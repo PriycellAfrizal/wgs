@@ -92,14 +92,16 @@ $(document).ready(function () {
     });
 });
 
-document.getElementById('updateStatusButton').addEventListener('click', function() {
+
+             document.getElementById('updateStatusButton').addEventListener('click', function() {
     const selectedRows = document.querySelectorAll('.select-row:checked');
     if (selectedRows.length === 0) {
         Swal.fire('No Selection', 'Please select at least one row to update.', 'warning');
         return;
     }
 
-    let selectedNosps = Array.from(selectedRows).map(cb => cb.value);
+    let selectedNosps = [];
+    selectedRows.forEach(cb => selectedNosps.push(cb.value));
 
     Swal.fire({
         title: 'Are you sure?',
@@ -110,27 +112,30 @@ document.getElementById('updateStatusButton').addEventListener('click', function
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, approve it!'
     }).then((result) => {
-        if (!result.isConfirmed) return;
-
-        fetch('updatestatussplocal.php', {
-            method: 'POST',
-            headers: {'Content-Type':'application/x-www-form-urlencoded'},
-            body: 'nosp=' + encodeURIComponent(selectedNosps.join(','))
-        })
-        .then(response => response.json())
-        .then(res => {
-            if (res.status === 'success') {
-                Swal.fire({
-                    title: 'Updated!',
-                    html: '<b style="color: black;">NO SP ' + selectedNosps.join(', ') + ' berhasil di Approved</b>',
-                    icon: 'success',
-                    timer: 3000,
-                    showConfirmButton: false
-                }).then(() => location.reload());
-            } else {
-                Swal.fire('Error!', res.message || 'Terjadi kesalahan', 'error');
-            }
-        })
-        .catch(() => Swal.fire('Error!', 'Response tidak valid dari server', 'error'));
+        if (result.isConfirmed) {
+            fetch("updatestatussplocal.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "nosps[]=" + selectedNosps.join("&nosps[]=")
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    Swal.fire({
+                        title: 'Updated!',
+                        html: '<b style="color: black;">NO SP ' + selectedNosps.join(', ') + ' berhasil di Approved</b>',
+                        icon: 'success',
+                        timer: 3000,
+                        showConfirmButton: false
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire('Error!', data.message || 'Terjadi kesalahan', 'error');
+                }
+            })
+            .catch(() => Swal.fire('Error!', 'Koneksi gagal ke server', 'error'));
+        }
     });
 });
+
