@@ -18,11 +18,11 @@ document.getElementById('select-all-footer').addEventListener('click', e => togg
 // Klik baris = toggle checkbox
 // ========================
 document.querySelectorAll('#datasp tbody tr').forEach(row => {
-    row.addEventListener('click', function(e) {
-        if (e.target.type !== "checkbox") {
-            const checkbox = this.querySelector('.select-row');
-            checkbox.checked = !checkbox.checked;
-            toggleRowHighlight(this, checkbox.checked);
+    row.addEventListener('click', event => {
+        if (event.target.type !== "checkbox") {
+            const cb = row.querySelector('.select-row');
+            cb.checked = !cb.checked;
+            toggleRowHighlight(row, cb.checked);
             updateSelectAllStatus();
         }
     });
@@ -42,9 +42,9 @@ function updateSelectAllStatus() {
 }
 
 // ========================
-// DataTables
+// DataTables custom sort untuk kolom status
 // ========================
-$(document).ready(function () {
+$(document).ready(function() {
     $('#dataTable').DataTable({
         "order": [[6, 'asc']],
         "columnDefs": [{
@@ -60,11 +60,11 @@ $(document).ready(function () {
                 }
             }
         }],
-        "createdRow": function (row, data) {
+        "createdRow": function(row, data) {
             $(row).attr('data-original-status', data[6]);
         },
-        "drawCallback": function () {
-            $('#dataTable tbody tr').each(function () {
+        "drawCallback": function() {
+            $('#dataTable tbody tr').each(function() {
                 var originalStatus = $(this).data('original-status');
                 $(this).find('td:eq(6)').text(originalStatus);
             });
@@ -76,26 +76,26 @@ $(document).ready(function () {
 // Update Status Button
 // ========================
 document.getElementById('updateStatusButton').addEventListener('click', function() {
-    const selectedRows = document.querySelectorAll('.select-row:checked');
-    if (selectedRows.length === 0) {
+    const selectedNosps = Array.from(document.querySelectorAll('.select-row:checked')).map(cb => cb.value);
+
+    if (selectedNosps.length === 0) {
         Swal.fire('No Selection', 'Please select at least one row to update.', 'warning');
         return;
     }
 
-    const selectedNosps = Array.from(selectedRows).map(cb => cb.value);
-
     Swal.fire({
-        title: 'Confirm Approval',
-        html: 'Do you want to approve the selected SP(s)?<br><b>' + selectedNosps.join(', ') + '</b>',
-        icon: 'question',
+        title: 'Are you sure?',
+        html: 'Do you want to approve the selected SP(s): <br><b style="color:black;">' + selectedNosps.join(', ') + '</b>?',
+        icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Yes, approve!',
-        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, approve!'
     }).then(result => {
         if (!result.isConfirmed) return;
 
         const formData = new URLSearchParams();
-        selectedNosps.forEach(n => formData.append('nosp[]', n));
+        selectedNosps.forEach(nosp => formData.append('nosp[]', nosp));
 
         fetch('updatestatussplocal.php', {
             method: 'POST',
@@ -104,33 +104,35 @@ document.getElementById('updateStatusButton').addEventListener('click', function
         })
         .then(res => res.json())
         .then(data => {
-            console.log("DEBUG response:", data);
+            console.log('DEBUG response:', data);
 
-            // ======================== Alert baru
             let htmlMsg = '';
             if (data.updated && Object.keys(data.updated).length > 0) {
                 htmlMsg += '<b>Updated:</b><br>';
                 for (const [nosp, info] of Object.entries(data.updated)) {
-                    htmlMsg += `NO SP ${nosp}: splocal(${info.splocal_affected}), splocalcopy(${info.splocalcopy_affected})<br>`;
+                    htmlMsg += `NO SP ${nosp} - splocal: ${info.splocal_affected}, splocalcopy: ${info.splocalcopy_affected}<br>`;
                 }
             }
             if (data.skipped && Object.keys(data.skipped).length > 0) {
-                htmlMsg += '<br><b>Skipped:</b><br>';
+                htmlMsg += '<b>Skipped:</b><br>';
                 for (const [nosp, reason] of Object.entries(data.skipped)) {
-                    htmlMsg += `NO SP ${nosp}: ${reason}<br>`;
+                    htmlMsg += `NO SP ${nosp} (${reason})<br>`;
                 }
             }
 
+            let icon = data.status === 'success' ? 'success' : 'warning';
+            if (data.status === 'error') icon = 'error';
+
             Swal.fire({
-                title: data.status === 'success' ? 'Success' : 'Completed with errors',
+                title: data.status === 'success' ? 'Success' : 'Notice',
                 html: htmlMsg || data.message,
-                icon: data.status === 'success' ? 'success' : 'warning',
+                icon: icon,
                 showConfirmButton: true
             }).then(() => location.reload());
         })
         .catch(err => {
-            console.error(err);
-            Swal.fire('Error', 'Connection to server failed', 'error');
+            console.error('Fetch error:', err);
+            Swal.fire('Error!', 'Koneksi gagal ke server', 'error');
         });
     });
 });
