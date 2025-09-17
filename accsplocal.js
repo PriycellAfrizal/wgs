@@ -1,76 +1,65 @@
-// ==========================
-// Select All Header & Footer
-// ==========================
-document.addEventListener("DOMContentLoaded", function () {
-    const selectAllHeader = document.getElementById('select-all');
-    const selectAllFooter = document.getElementById('select-all-footer');
 
-    // Fungsi update highlight row
-    function toggleRowHighlight(row, isSelected) {
-        if (isSelected) {
-            row.style.backgroundColor = '#007bff';
-            row.style.color = 'white';
-        } else {
-            row.style.backgroundColor = '';
-            row.style.color = '';
-        }
-    }
-
-    // Sinkronkan status "select all"
-    function updateSelectAllStatus() {
-        const checkboxes = document.querySelectorAll('.select-row');
-        const allChecked = Array.from(checkboxes).length > 0 &&
-                           Array.from(checkboxes).every(cb => cb.checked);
-        selectAllHeader.checked = allChecked;
-        selectAllFooter.checked = allChecked;
-    }
-
-    // Event select-all header
-    if (selectAllHeader) {
-        selectAllHeader.addEventListener('change', function (e) {
-            const isChecked = e.target.checked;
-            document.querySelectorAll('.select-row').forEach(cb => {
-                cb.checked = isChecked;
-                toggleRowHighlight(cb.closest('tr'), isChecked);
-            });
-            selectAllFooter.checked = isChecked;
-        });
-    }
-
-    // Event select-all footer
-    if (selectAllFooter) {
-        selectAllFooter.addEventListener('change', function (e) {
-            const isChecked = e.target.checked;
-            document.querySelectorAll('.select-row').forEach(cb => {
-                cb.checked = isChecked;
-                toggleRowHighlight(cb.closest('tr'), isChecked);
-            });
-            selectAllHeader.checked = isChecked;
-        });
-    }
-
-    // Klik baris untuk toggle
-    document.querySelectorAll('#datasp tbody tr').forEach(row => {
-        row.addEventListener('click', function (e) {
-            // Cegah dobel toggle kalau klik langsung checkbox
-            if (e.target.classList.contains('select-row')) return;
-
-            const checkbox = this.querySelector('.select-row');
-            if (checkbox) {
-                checkbox.checked = !checkbox.checked;
-                toggleRowHighlight(this, checkbox.checked);
-                updateSelectAllStatus();
-            }
-        });
-
-        row.style.cursor = 'pointer';
+// ========================
+// Checkbox Select All
+// ========================
+document.getElementById('select-all').addEventListener('click', function(event) {
+    const isChecked = event.target.checked;
+    const checkboxes = document.querySelectorAll('.select-row');
+    checkboxes.forEach((checkbox) => {
+        checkbox.checked = isChecked;
+        toggleRowHighlight(checkbox.closest('tr'), checkbox.checked);
     });
+    document.getElementById('select-all-footer').checked = isChecked;
+});
 
-    // ==========================
-    // DataTables Init
-    // ==========================
+document.getElementById('select-all-footer').addEventListener('click', function(event) {
+    const isChecked = event.target.checked;
+    const checkboxes = document.querySelectorAll('.select-row');
+    checkboxes.forEach((checkbox) => {
+        checkbox.checked = isChecked;
+        toggleRowHighlight(checkbox.closest('tr'), checkbox.checked);
+    });
+    document.getElementById('select-all').checked = isChecked;
+});
+
+// ========================
+// Klik baris = toggle checkbox
+// ========================
+document.querySelectorAll('#datasp tbody tr').forEach(row => {
+    row.addEventListener('click', function(event) {
+        if (event.target.type !== "checkbox") { 
+            const checkbox = this.querySelector('.select-row');
+            checkbox.checked = !checkbox.checked;
+            toggleRowHighlight(this, checkbox.checked);
+            updateSelectAllStatus();
+        }
+    });
+    row.style.cursor = 'pointer';
+});
+
+function toggleRowHighlight(row, isSelected) {
+    if (isSelected) {
+        row.style.backgroundColor = '#007bff';
+        row.style.color = 'white';
+    } else {
+        row.style.backgroundColor = '';
+        row.style.color = '';
+    }
+}
+
+function updateSelectAllStatus() {
+    const checkboxes = document.querySelectorAll('.select-row');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    document.getElementById('select-all').checked = allChecked;
+    document.getElementById('select-all-footer').checked = allChecked;
+}
+
+// ========================
+// DataTables custom sort untuk kolom status
+// ========================
+$(document).ready(function () {
     $('#dataTable').DataTable({
-        "order": [[6, 'asc']], // urutkan by kolom status
+        "order": [[6, 'asc']],
         "columnDefs": [{
             "targets": [6],
             "orderData": [6],
@@ -94,13 +83,12 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
     });
+});
 
-    // ==========================
-    // Update Status Button
-    // ==========================
-   // ====== JS: updateStatusButton handler (modern, robust) ======
-
-    document.getElementById('updateStatusButton').addEventListener('click', function() {
+// ========================
+// Update Status Button
+// ========================
+document.getElementById('updateStatusButton').addEventListener('click', function() {
     const selectedRows = document.querySelectorAll('.select-row:checked');
     if (selectedRows.length === 0) {
         Swal.fire('No Selection', 'Please select at least one row to update.', 'warning');
@@ -122,11 +110,14 @@ document.addEventListener("DOMContentLoaded", function () {
         if (result.isConfirmed) {
             fetch("updatestatussplocal.php", {
                 method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
                 body: "nosp=" + encodeURIComponent(selectedNosps.join(','))
             })
             .then(res => res.json())
             .then(data => {
+                console.log("DEBUG response:", data); // cek response di console
                 if (data.status === "success") {
                     Swal.fire({
                         title: 'Updated!',
@@ -139,7 +130,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     Swal.fire('Error!', data.message || 'Terjadi kesalahan', 'error');
                 }
             })
-            .catch(() => Swal.fire('Error!', 'Koneksi gagal ke server', 'error'));
+            .catch(err => {
+                console.error("Fetch error:", err);
+                Swal.fire('Error!', 'Koneksi gagal ke server', 'error');
+            });
         }
     });
 });
