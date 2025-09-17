@@ -1,25 +1,21 @@
-
 // ========================
 // Checkbox Select All
 // ========================
-document.getElementById('select-all').addEventListener('click', function(event) {
-    const isChecked = event.target.checked;
-    const checkboxes = document.querySelectorAll('.select-row');
-    checkboxes.forEach((checkbox) => {
-        checkbox.checked = isChecked;
-        toggleRowHighlight(checkbox.closest('tr'), checkbox.checked);
-    });
-    document.getElementById('select-all-footer').checked = isChecked;
-});
-
-document.getElementById('select-all-footer').addEventListener('click', function(event) {
-    const isChecked = event.target.checked;
+function toggleAllCheckboxes(isChecked) {
     const checkboxes = document.querySelectorAll('.select-row');
     checkboxes.forEach((checkbox) => {
         checkbox.checked = isChecked;
         toggleRowHighlight(checkbox.closest('tr'), checkbox.checked);
     });
     document.getElementById('select-all').checked = isChecked;
+    document.getElementById('select-all-footer').checked = isChecked;
+}
+
+document.getElementById('select-all').addEventListener('click', function(e) {
+    toggleAllCheckboxes(e.target.checked);
+});
+document.getElementById('select-all-footer').addEventListener('click', function(e) {
+    toggleAllCheckboxes(e.target.checked);
 });
 
 // ========================
@@ -38,13 +34,8 @@ document.querySelectorAll('#datasp tbody tr').forEach(row => {
 });
 
 function toggleRowHighlight(row, isSelected) {
-    if (isSelected) {
-        row.style.backgroundColor = '#007bff';
-        row.style.color = 'white';
-    } else {
-        row.style.backgroundColor = '';
-        row.style.color = '';
-    }
+    row.style.backgroundColor = isSelected ? '#007bff' : '';
+    row.style.color = isSelected ? 'white' : '';
 }
 
 function updateSelectAllStatus() {
@@ -88,7 +79,6 @@ $(document).ready(function () {
 // ========================
 // Update Status Button
 // ========================
-
 document.getElementById('updateStatusButton').addEventListener('click', function() {
     const selectedRows = document.querySelectorAll('.select-row:checked');
     if (selectedRows.length === 0) {
@@ -111,18 +101,16 @@ document.getElementById('updateStatusButton').addEventListener('click', function
         if (result.isConfirmed) {
             fetch("updatestatussplocal.php", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: "nosp=" + encodeURIComponent(selectedNosps.join(','))
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nosp: selectedNosps })
             })
             .then(res => res.json())
             .then(data => {
-                console.log("DEBUG response:", data); // cek response di console
+                console.log("DEBUG response:", data);
                 if (data.status === "success") {
                     Swal.fire({
                         title: 'Updated!',
-                        html: '<b style="color: black;">' + data.message + '</b>', // ✅ pakai message dari server
+                        html: '<b style="color: black;">' + data.message + '</b>',
                         icon: 'success',
                         timer: 3000,
                         showConfirmButton: false
@@ -138,4 +126,3 @@ document.getElementById('updateStatusButton').addEventListener('click', function
         }
     });
 });
-
