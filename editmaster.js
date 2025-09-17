@@ -142,37 +142,52 @@ function saveChanges() {
         tipe: $("#tipeEdit").val(),
         classValue: $("#classEdit").val(),
         sn: $("#snEdit").val()
-        // ⚠️ nama user login jangan dikirim, ambil dari PHP session
+        // nama edit otomatis dari session PHP
     };
 
-    // Validasi input
-    if (
-        !data.namabarang || !data.itemalias || !data.classValue || !data.satuan ||
-        !data.tipe || !data.sn || !data.minimumstock || !data.maxstock
-    ) {
-        alert("Lengkapi semua data sebelum menyimpan perubahan!");
+    // Validasi form sederhana
+    if (!data.namabarang || !data.itemalias || !data.classValue || !data.satuan ||
+        !data.tipe || !data.sn || !data.minimumstock || !data.maxstock) {
+        Swal.fire("Peringatan", "Lengkapi semua data sebelum menyimpan!", "warning");
         return;
     }
 
     if (parseInt(data.maxstock) < parseInt(data.minimumstock)) {
-        alert("Nilai MaxStock harus lebih besar atau sama dengan MinimumStock!");
+        Swal.fire("Peringatan", "Nilai MaxStock harus lebih besar atau sama dengan MinimumStock!", "warning");
         return;
     }
 
-    // Kirim Ajax
     $.ajax({
         type: "POST",
         url: "warehouse/updatedatamaster.php",
         data: data,
-        success: function (res) {
-            console.log("Server Response:", res);
-            $("#exampleModalScrollable").modal("hide");
-            alert("Perubahan berhasil disimpan!");
-            location.reload();
+        success: function(response) {
+            console.log("Server Response:", response);
+
+            // Jika PHP ada error MySQL, tampilkan langsung
+            if (response.includes("Error") || response.includes("red")) {
+                Swal.fire({
+                    title: "Gagal",
+                    html: response,   // tampilkan isi error dari PHP
+                    icon: "error",
+                    width: "700px"
+                });
+            } else {
+                Swal.fire({
+                    title: "Berhasil",
+                    text: "Perubahan berhasil disimpan!",
+                    icon: "success",
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    $("#exampleModalScrollable").modal("hide");
+                    location.reload();
+                });
+            }
         },
-        error: function (xhr, status, err) {
-            console.error(err);
-            alert("Terjadi kesalahan saat menyimpan perubahan. Mohon coba lagi.");
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", error);
+            Swal.fire("Kesalahan", "Tidak dapat terhubung ke server: " + error, "error");
         }
     });
 }
