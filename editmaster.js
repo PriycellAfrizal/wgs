@@ -109,8 +109,7 @@ function saveChanges() {
         maxstock: $("#maxstockEdit").val(),
         tipe: $("#tipeEdit").val(),
         classValue: $("#classEdit").val(),
-        sn: $("#snEdit").val(),
-        namaedit: $("#namaedit").val()
+        sn: $("#snEdit").val()
     };
 
     // Validasi
