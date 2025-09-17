@@ -99,20 +99,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // Update Status Button
     // ==========================
    // ====== JS: updateStatusButton handler (modern, robust) ======
-document.getElementById('updateStatusButton').addEventListener('click', async function() {
-    // ambil semua checkbox yang ter-check
-    const selectedRows = Array.from(document.querySelectorAll('.select-row:checked'));
+
+    document.getElementById('updateStatusButton').addEventListener('click', function() {
+    const selectedRows = document.querySelectorAll('.select-row:checked');
     if (selectedRows.length === 0) {
         Swal.fire('No Selection', 'Please select at least one row to update.', 'warning');
         return;
     }
 
-    const selectedNosps = selectedRows.map(cb => cb.value);
+    let selectedNosps = [];
+    selectedRows.forEach(cb => selectedNosps.push(cb.value));
 
-    // debug quick (cek di console apa yang akan dikirim)
-    console.log('Will send nosps:', selectedNosps);
-
-    const confirmed = await Swal.fire({
+    Swal.fire({
         title: 'Are you sure?',
         html: 'Do you want to approve the selected SP(s): <br><b style="color: black;">' + selectedNosps.join(', ') + '</b>?',
         icon: 'warning',
@@ -120,34 +118,28 @@ document.getElementById('updateStatusButton').addEventListener('click', async fu
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, approve it!'
-    });
-
-    if (!confirmed.isConfirmed) return;
-
-    try {
-        const resp = await fetch('updatestatussplocal.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nosps: selectedNosps })
-        });
-
-        // jika server merespon bukan JSON, akan throw di json()
-        const data = await resp.json();
-        console.log('Server response:', data);
-
-        if (data.status === 'success') {
-            Swal.fire({
-                title: 'Updated!',
-                html: '<b style="color: black;">NO SP ' + selectedNosps.join(', ') + ' berhasil di Approved</b>',
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
-            }).then(() => location.reload());
-        } else {
-            Swal.fire('Error!', data.message || 'Terjadi kesalahan', 'error');
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch("updatestatussplocal.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "nosp=" + encodeURIComponent(selectedNosps.join(','))
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    Swal.fire({
+                        title: 'Updated!',
+                        html: '<b style="color: black;">NO SP ' + selectedNosps.join(', ') + ' berhasil di Approved</b>',
+                        icon: 'success',
+                        timer: 3000,
+                        showConfirmButton: false
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire('Error!', data.message || 'Terjadi kesalahan', 'error');
+                }
+            })
+            .catch(() => Swal.fire('Error!', 'Koneksi gagal ke server', 'error'));
         }
-    } catch (err) {
-        console.error('Fetch error:', err);
-        Swal.fire('Error!', 'Gagal koneksi ke server atau response tidak valid.', 'error');
-    }
+    });
 });
