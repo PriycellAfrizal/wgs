@@ -65,6 +65,7 @@ $(document).ready(function () {
 // ==========================
 // Fungsi Open Modal Edit
 // ==========================
+
 function openEditModal(clickedElement) {
     const kodebarang = clickedElement.getAttribute('data-kodebarang');
     const namabarang = clickedElement.getAttribute('data-namabarang');
@@ -76,36 +77,28 @@ function openEditModal(clickedElement) {
     const classValue = clickedElement.getAttribute('data-class');
     const snData = clickedElement.getAttribute('data-sn') || '';
 
-
-    // Set input modal
     $("#kodebarangEdit").val(kodebarang);
     $("#namabarangEdit").val(namabarang);
     $("#itemaliasEdit").val(itemalias);
     $("#minimumstockEdit").val(minimumstock);
     $("#maxstockEdit").val(maxstock);
-    // Set Select2
+
     $("#satuanEdit").empty().append(new Option(satuan, satuan, true, true)).trigger('change');
     $("#classEdit").empty().append(new Option(classValue, classValue, true, true)).trigger('change');
 
-    // Set SN
     const snArray = snData ? snData.split(',') : [];
     $("#snEdit").empty();
-    snArray.forEach(val => { $("#snEdit").append(new Option(val, val, true, true)); });
+    snArray.forEach(val => $("#snEdit").append(new Option(val, val, true, true)));
     $("#snEdit").trigger('change');
 
-    // Set Tipe
     const tipeArray = tipe ? tipe.split(',') : [];
     $("#tipeEdit").empty();
-    tipeArray.forEach(val => { $("#tipeEdit").append(new Option(val, val, true, true)); });
+    tipeArray.forEach(val => $("#tipeEdit").append(new Option(val, val, true, true)));
     $("#tipeEdit").trigger('change');
 
-    // Tampilkan modal
     $("#exampleModalScrollable").modal("show");
 }
 
-// ==========================
-// Fungsi Simpan Perubahan
-// ==========================
 function saveChanges() {
     const data = {
         kodebarang: $("#kodebarangEdit").val(),
@@ -116,7 +109,8 @@ function saveChanges() {
         maxstock: $("#maxstockEdit").val(),
         tipe: $("#tipeEdit").val(),
         classValue: $("#classEdit").val(),
-        sn: $("#snEdit").val()
+        sn: $("#snEdit").val(),
+        namaedit: $("#namaedit").val()
     };
 
     // Validasi
