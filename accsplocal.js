@@ -99,29 +99,22 @@ document.getElementById('updateStatusButton').addEventListener('click', function
         confirmButtonText: 'Yes, approve it!'
     }).then((result) => {
         if (result.isConfirmed) {
-            // 🔹 Pakai form-urlencoded agar lebih kompatibel dengan PHP
-            const formData = new URLSearchParams();
-            selectedNosps.forEach(nosp => formData.append("nosp[]", nosp));
-
+            // 🔹 Kirim string dipisah koma, sesuai PHP kamu
             fetch("updatestatussplocal.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: formData.toString()
+                body: "nosp=" + encodeURIComponent(selectedNosps.join(","))
             })
-            .then(res => res.json())
-            .then(data => {
-                console.log("DEBUG response:", data);
-                if (data.status === "success") {
-                    Swal.fire({
-                        title: 'Updated!',
-                        html: '<b style="color: black;">' + data.message + '</b>',
-                        icon: 'success',
-                        timer: 3000,
-                        showConfirmButton: false
-                    }).then(() => location.reload());
-                } else {
-                    Swal.fire('Error!', data.message || 'Terjadi kesalahan', 'error');
-                }
+            .then(res => res.text()) // PHP kamu echo text biasa
+            .then(response => {
+                console.log("DEBUG response:", response);
+                Swal.fire({
+                    title: 'Updated!',
+                    html: '<b style="color: black;">' + response + '</b>',
+                    icon: 'success',
+                    timer: 3000,
+                    showConfirmButton: false
+                }).then(() => location.reload());
             })
             .catch(err => {
                 console.error("Fetch error:", err);
