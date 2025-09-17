@@ -121,30 +121,34 @@ document.getElementById('updateStatusButton').addEventListener('click', function
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "updatestatussplocal.php", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    if (xhr.responseText.includes("successfully")) {
-                        Swal.fire({
-                            title: 'Updated!',
-                            html: '<b style="color: black;">NO SP ' + selectedNosps.join(', ') + ' berhasil di Approved</b>',
-                            icon: 'success',
-                            timer: 3000,  // Durasi notifikasi (3 detik)
-                            showConfirmButton: false
-                        }).then(() => {
-                            location.reload();  // This will refresh the page
-                        });
-                    } else {
-                        Swal.fire(
-                            'Error!',
-                            xhr.responseText,
-                            'error'
-                        );
-                    }
-                }
-            };
-            // Mengirimkan nosp yang dipilih ke server
-            xhr.send("nosp=" + selectedNosps.join(','));
-        }
-    });
-});
+           xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+        try {
+            const res = JSON.parse(xhr.responseText);
 
+            if (res.status === "success") {
+                Swal.fire({
+                    title: 'Updated!',
+                    html: '<b style="color: black;">NO SP ' + selectedNosps.join(', ') + ' berhasil di Approved</b>',
+                    icon: 'success',
+                    timer: 3000,
+                    showConfirmButton: false
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire(
+                    'Error!',
+                    res.message || 'Terjadi kesalahan',
+                    'error'
+                );
+            }
+        } catch(e) {
+            Swal.fire(
+                'Error!',
+                'Response tidak valid dari server',
+                'error'
+            );
+        }
+    }
+};
