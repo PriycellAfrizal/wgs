@@ -91,7 +91,6 @@ $(document).ready(function () {
         }
     });
 });
-
 document.getElementById('updateStatusButton').addEventListener('click', function() {
     // Ambil semua checkbox yang dipilih
     const selectedRows = document.querySelectorAll('.select-row:checked');
@@ -121,34 +120,43 @@ document.getElementById('updateStatusButton').addEventListener('click', function
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "updatestatussplocal.php", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-           xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-        try {
-            const res = JSON.parse(xhr.responseText);
+            
+            // Pastikan data dikirim sebagai string
+            var postData = "nosp=" + encodeURIComponent(selectedNosps.join(','));
 
-            if (res.status === "success") {
-                Swal.fire({
-                    title: 'Updated!',
-                    html: '<b style="color: black;">NO SP ' + selectedNosps.join(', ') + ' berhasil di Approved</b>',
-                    icon: 'success',
-                    timer: 3000,
-                    showConfirmButton: false
-                }).then(() => {
-                    location.reload();
-                });
-            } else {
-                Swal.fire(
-                    'Error!',
-                    res.message || 'Terjadi kesalahan',
-                    'error'
-                );
-            }
-        } catch(e) {
-            Swal.fire(
-                'Error!',
-                'Response tidak valid dari server',
-                'error'
-            );
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    try {
+                        const res = JSON.parse(xhr.responseText);
+
+                        if (res.status === "success") {
+                            Swal.fire({
+                                title: 'Updated!',
+                                html: '<b style="color: black;">NO SP ' + selectedNosps.join(', ') + ' berhasil di Approved</b>',
+                                icon: 'success',
+                                timer: 3000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                res.message || 'Terjadi kesalahan',
+                                'error'
+                            );
+                        }
+                    } catch(e) {
+                        Swal.fire(
+                            'Error!',
+                            'Response tidak valid dari server',
+                            'error'
+                        );
+                    }
+                }
+            };
+
+            xhr.send(postData); // kirim data ke server
         }
-    }
-};
+    });
+});
