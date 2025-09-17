@@ -91,21 +91,16 @@ $(document).ready(function () {
         }
     });
 });
+
 document.getElementById('updateStatusButton').addEventListener('click', function() {
-    // Ambil semua checkbox yang dipilih
     const selectedRows = document.querySelectorAll('.select-row:checked');
     if (selectedRows.length === 0) {
         Swal.fire('No Selection', 'Please select at least one row to update.', 'warning');
         return;
     }
 
-    // Buat array untuk menyimpan semua nosp yang dipilih
-    let selectedNosps = [];
-    selectedRows.forEach((checkbox) => {
-        selectedNosps.push(checkbox.value);
-    });
+    let selectedNosps = Array.from(selectedRows).map(cb => cb.value);
 
-    // Konfirmasi dengan SweetAlert
     Swal.fire({
         title: 'Are you sure?',
         html: 'Do you want to approve the selected SP(s): <br><b style="color: black;">' + selectedNosps.join(', ') + '</b>?',
@@ -115,48 +110,27 @@ document.getElementById('updateStatusButton').addEventListener('click', function
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, approve it!'
     }).then((result) => {
-        if (result.isConfirmed) {
-            // Kirim data ke server menggunakan AJAX
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "updatestatussplocal.php", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            
-            // Pastikan data dikirim sebagai string
-            var postData = "nosp=" + encodeURIComponent(selectedNosps.join(','));
+        if (!result.isConfirmed) return;
 
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    try {
-                        const res = JSON.parse(xhr.responseText);
-
-                        if (res.status === "success") {
-                            Swal.fire({
-                                title: 'Updated!',
-                                html: '<b style="color: black;">NO SP ' + selectedNosps.join(', ') + ' berhasil di Approved</b>',
-                                icon: 'success',
-                                timer: 3000,
-                                showConfirmButton: false
-                            }).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire(
-                                'Error!',
-                                res.message || 'Terjadi kesalahan',
-                                'error'
-                            );
-                        }
-                    } catch(e) {
-                        Swal.fire(
-                            'Error!',
-                            'Response tidak valid dari server',
-                            'error'
-                        );
-                    }
-                }
-            };
-
-            xhr.send(postData); // kirim data ke server
-        }
+        fetch('updatestatussplocal.php', {
+            method: 'POST',
+            headers: {'Content-Type':'application/x-www-form-urlencoded'},
+            body: 'nosp=' + encodeURIComponent(selectedNosps.join(','))
+        })
+        .then(response => response.json())
+        .then(res => {
+            if (res.status === 'success') {
+                Swal.fire({
+                    title: 'Updated!',
+                    html: '<b style="color: black;">NO SP ' + selectedNosps.join(', ') + ' berhasil di Approved</b>',
+                    icon: 'success',
+                    timer: 3000,
+                    showConfirmButton: false
+                }).then(() => location.reload());
+            } else {
+                Swal.fire('Error!', res.message || 'Terjadi kesalahan', 'error');
+            }
+        })
+        .catch(() => Swal.fire('Error!', 'Response tidak valid dari server', 'error'));
     });
 });
