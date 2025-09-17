@@ -99,10 +99,14 @@ document.getElementById('updateStatusButton').addEventListener('click', function
         confirmButtonText: 'Yes, approve it!'
     }).then((result) => {
         if (result.isConfirmed) {
+            // 🔹 Pakai form-urlencoded agar lebih kompatibel dengan PHP
+            const formData = new URLSearchParams();
+            selectedNosps.forEach(nosp => formData.append("nosp[]", nosp));
+
             fetch("updatestatussplocal.php", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nosp: selectedNosps })
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: formData.toString()
             })
             .then(res => res.json())
             .then(data => {
