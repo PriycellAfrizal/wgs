@@ -88,6 +88,7 @@ $(document).ready(function () {
 // ========================
 // Update Status Button
 // ========================
+
 document.getElementById('updateStatusButton').addEventListener('click', function() {
     const selectedRows = document.querySelectorAll('.select-row:checked');
     if (selectedRows.length === 0) {
@@ -121,7 +122,7 @@ document.getElementById('updateStatusButton').addEventListener('click', function
                 if (data.status === "success") {
                     Swal.fire({
                         title: 'Updated!',
-                        html: '<b style="color: black;">NO SP ' + selectedNosps.join(', ') + ' berhasil di Approved</b>',
+                        html: '<b style="color: black;">' + data.message + '</b>', // ✅ pakai message dari server
                         icon: 'success',
                         timer: 3000,
                         showConfirmButton: false
@@ -137,3 +138,4 @@ document.getElementById('updateStatusButton').addEventListener('click', function
         }
     });
 });
+
