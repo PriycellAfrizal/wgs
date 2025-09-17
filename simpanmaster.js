@@ -1,308 +1,146 @@
-
 $(document).ready(function () {
-    $('#dataTable').DataTable({
-        "ordering": false,    // Hilangkan semua fitur sort + panah
-        "searching": true,    // Pencarian tetap aktif
-        "paging": true,       // Paging aktif
-        "info": true,         // Info jumlah baris
-        "pageLength": 20      // Default tampil 20 baris
-    });
-});
+    // Inisialisasi elemen-elemen select2 (gantilah sesuai kebutuhan)
+    $("#class").select2();
+    $("#satuan").select2();
+    $("#tipe").select2();
+    $("#sn").select2();
 
-$(document).ready(function () {
-    // Inisialisasi Select2 untuk dropdown classEdit
-    $('#classEdit').select2({
-        ajax: {
-            url: 'warehouse/get_classs.php',
-            dataType: 'json',
-            delay: 250,
-            processResults: function (data) {
-                return {
-                    results: data
-                };
-            },
-            cache: true
-        },
-        language: {
-            searching: function () {
-                return 'Mencari...';
-            }
-        },
-        placeholder: 'Cari...',
-        minimumInputLength: 0,
-        allowClear: true,
-        formatNoMatches: function () {
-            return 'Tidak ditemukan hasil';
-        }
-    });
+    // Menangani perubahan pada elemen select
+    $("#class").change(function () {
+        var selectedClass = $(this).val();
+        console.log("Selected Class:", selectedClass);
 
-    // Inisialisasi Select2 untuk dropdown snEdit
-    $('#snEdit').select2({
-        ajax: {
-            url: 'warehouse/get_sn.php',
-            dataType: 'json',
-            delay: 250,
-            processResults: function (data) {
-                return {
-                    results: data
-                };
-            },
-            cache: true
-        },
-        language: {
-            searching: function () {
-                return 'Mencari...';
-            }
-        },
-        placeholder: 'Cari SN...',
-        minimumInputLength: 0,
-        allowClear: true,
-        formatNoMatches: function () {
-            return 'Tidak ditemukan hasil';
-        }
-    });
-
-    // Inisialisasi Select2 untuk dropdown tipeEdit
-    $('#tipeEdit').select2({
-        ajax: {
-            url: 'warehouse/get_tipe.php',
-            dataType: 'json',
-            delay: 250,
-            processResults: function (data) {
-                return {
-                    results: data
-                };
-            },
-            cache: true
-        },
-        language: {
-            searching: function () {
-                return 'Mencari...';
-            }
-        },
-        placeholder: 'Cari Tipe...',
-        minimumInputLength: 0,
-        allowClear: true,
-        formatNoMatches: function () {
-            return 'Tidak ditemukan hasil';
-        }
-    });
-
-    // Inisialisasi Select2 untuk dropdown satuanEdit
-    $('#satuanEdit').select2({
-        ajax: {
-            url: 'warehouse/get_satuans.php',
-            dataType: 'json',
-            delay: 250,
-            processResults: function (data) {
-                return {
-                    results: data
-                };
-            },
-            cache: true
-        },
-        language: {
-            searching: function () {
-                return 'Mencari...';
-            }
-        },
-        placeholder: 'Cari Satuan...',
-        minimumInputLength: 0,
-        allowClear: true,
-        formatNoMatches: function () {
-            return 'Tidak ditemukan hasil';
-        }
-    });
-
-    $(document).ready(function () {
-
-        $('#myTable').DataTable(); // ID From dataTable 
-        $('#dataTable').DataTable(); // ID From dataTable 
-        $('#dataTableHover').DataTable(); // ID From dataTable with Hover
-
-
-    });
-});
-
-
-
-
-function openEditModal(clickedElement) {
-    var kodebarang = clickedElement.getAttribute('data-kodebarang');
-    var namabarang = clickedElement.getAttribute('data-namabarang');
-    var satuan = clickedElement.getAttribute('data-satuan');
-    var itemalias = clickedElement.getAttribute('data-itemalias');
-    var minimumstock = clickedElement.getAttribute('data-minimumstock');
-    var maxstock = clickedElement.getAttribute('data-maxstock');
-    var tipe = clickedElement.getAttribute('data-tipe');
-    var classValue = clickedElement.getAttribute('data-class'); // Menangkap nilai class
-
-    // Buat promise untuk mendapatkan nilai sn
-    var getSnPromise = new Promise(function (resolve, reject) {
-        var snData = clickedElement.getAttribute('data-sn');
-
-        if (snData) {
-            var snArray = snData.split(',');
-            resolve(snArray);
+        // Validasi: Pastikan nilai tidak sama dengan placeholder
+        if (selectedClass === null || selectedClass === "") {
+            alert("Class tidak boleh kosong!");
+            // Lakukan sesuatu jika class kosong (jika diperlukan)
         } else {
-            $.ajax({
-                type: "GET",
-                url: "warehouse/get_sn.php",
-                dataType: 'json',
-                success: function (data) {
-                    resolve(data);
-                },
-                error: function (error) {
-                    reject(error);
-                }
-            });
+            // Lakukan sesuatu dengan nilai class yang dipilih
         }
     });
 
-    // Buat promise untuk mendapatkan nilai tipe
-    var getTipePromise = new Promise(function (resolve, reject) {
-        var tipeData = clickedElement.getAttribute('data-tipe');
+    // Menangani perubahan pada elemen select
+    $("#satuan").change(function () {
+        var selectedSatuan = $(this).val();
+        console.log("Selected Satuan:", selectedSatuan);
 
-        if (tipeData) {
-            var tipeArray = tipeData.split(',');
-            resolve(tipeArray);
+        // Validasi: Pastikan nilai tidak sama dengan placeholder
+        if (selectedSatuan === null || selectedSatuan === "") {
+            alert("Satuan tidak boleh kosong!");
+            // Lakukan sesuatu jika satuan kosong (jika diperlukan)
         } else {
-            $.ajax({
-                type: "GET",
-                url: "warehouse/get_tipe.php",
-                dataType: 'json',
-                success: function (data) {
-                    resolve(data);
-                },
-                error: function (error) {
-                    reject(error);
-                }
-            });
+            // Lakukan sesuatu dengan nilai satuan yang dipilih
         }
     });
 
-    // Gunakan promise untuk menangkap nilai sn, tipe, dan membuka modal setelahnya
-    Promise.all([getSnPromise, getTipePromise]).then(function (values) {
-        var snArray = values[0];
-        var tipeArray = values[1];
+    // Menangani perubahan pada elemen select
+    $("#tipe").change(function () {
+        var selectedTipe = $(this).val();
+        console.log("Selected Type:", selectedTipe);
 
-        // Isi input di dalam modal dengan data dari baris yang bersangkutan
-        $("#kodebarangEdit").val(kodebarang);
-        $("#namabarangEdit").val(namabarang);
-        $("#itemaliasEdit").val(itemalias);
-        $("#minimumstockEdit").val(minimumstock);
-        $("#maxstockEdit").val(maxstock);
-
-        // Set the value in the Select2 dropdown for satuanEdit
-        var satuanEditSelect = $("#satuanEdit");
-        satuanEditSelect.empty();
-        var optionSatuan = new Option(satuan, satuan, true, true);
-        satuanEditSelect.append(optionSatuan).trigger('change');
-
-        // Set the value in the Select2 dropdown for classEdit
-        var classEditSelect = $("#classEdit");
-        classEditSelect.empty();
-        var optionClass = new Option(classValue, classValue, true, true);
-        classEditSelect.append(optionClass).trigger('change');
-
-    // Set the value in the Select2 dropdown for snEdit
-var snEditSelect = $("#snEdit");
-snEditSelect.empty();
-
-$.each(snArray, function (index, value) {
-    // Check if the value is an object
-    if (typeof value === 'object') {
-        // Check if the object has a specific property, for example, 'name'
-        if (value.name !== undefined && value.name !== null) {
-            var optionSn = new Option(value.name, value.name, true, true);
-            snEditSelect.append(optionSn);
+        // Validasi: Pastikan nilai tidak sama dengan placeholder
+        if (selectedTipe === null || selectedTipe === "") {
+            alert("Tipe tidak boleh kosong!");
+            // Lakukan sesuatu jika tipe kosong (jika diperlukan)
+        } else {
+            // Lakukan sesuatu dengan nilai tipe yang dipilih
         }
-    } else {
-        // If it's not an object, use the value directly
-        var optionSn = new Option(value, value, true, true);
-        snEditSelect.append(optionSn);
-    }
+    });
+
+    // Menangani perubahan pada elemen select
+    $("#sn").change(function () {
+        var selectedSN = $(this).val();
+        console.log("Selected SN:", selectedSN);
+
+        // Validasi: Pastikan nilai tidak sama dengan placeholder
+        if (selectedSN === null || selectedSN === "") {
+            alert("SN tidak boleh kosong!");
+            // Lakukan sesuatu jika SN kosong (jika diperlukan)
+        } else {
+            // Lakukan sesuatu dengan nilai SN yang dipilih
+        }
+    });
 });
 
-snEditSelect.trigger('change');
-
-        
-
-        // Set the value in the Select2 dropdown for tipeEdit
-        var tipeEditSelect = $("#tipeEdit");
-        tipeEditSelect.empty();
-        $.each(tipeArray, function (index, value) {
-            var optionTipe = new Option(value, value, true, true);
-            tipeEditSelect.append(optionTipe);
-        });
-        tipeEditSelect.trigger('change');
-
-        // Buka modal
-        $("#exampleModalScrollable").modal("show");
-    }).catch(function (error) {
-        console.error(error);
-    });
-}
-
-
-function saveChanges() {
-    var kodebarang = $("#kodebarangEdit").val();
-    var namabarang = $("#namabarangEdit").val();
-    var satuan = $("#satuanEdit").val();
-    var itemalias = $("#itemaliasEdit").val();
-    var minimumstock = $("#minimumstockEdit").val();
-    var maxstock = $("#maxstockEdit").val();
-    var tipe = $("#tipeEdit").val();
-    var classValue = $("#classEdit").val();
-    var snData = $("#snEdit").val();
+function simpanmaster() {
+    // Mendapatkan semua data yang akan disimpan
+    var namabarang = $("#namabarang").val();
+    var itemalias = $("#itemalias").val();
+    var classValue = $("#class").val(); // Get selected value directly
+    var satuanValue = $("#satuan").val(); // Get selected value directly
+    var tipe = $("#tipe").val(); // Get selected value directly
+    var minimumstock = $("#minimumstock").val();
+    var maxstock = $("#maxstock").val();
+    var stock = $("#stock").val();
+    var sn = $("#sn").val(); // Get selected value directly
 
     // Validasi data kosong atau placeholder sebelum mengirim data
     if (
         namabarang === "" ||
         itemalias === "" ||
         classValue === null || classValue === "" ||
-        satuan === null || satuan === "" ||
+        satuanValue === null || satuanValue === "" ||
         tipe === null || tipe === "" ||
-        snData === null || snData === "" ||
         minimumstock === "" ||
-        maxstock === ""
+        maxstock === "" ||
+        stock === "" ||
+        sn === null || sn === ""
     ) {
-        alert("Lengkapi semua data sebelum menyimpan perubahan!");
-        return;
+        alert("Lengkapi semua data sebelum menyimpan!");
+        return; // Berhenti jika ada data yang kosong
     }
 
-    // Check if maxstock is greater than or equal to minimumstock
-    if (parseInt(maxstock) < parseInt(minimumstock)) {
-        alert("Nilai MaxStock harus lebih besar atau sama dengan MinimumStock!");
-        return;
+    // Validasi: Pastikan MaxStock lebih besar dari MinimumStock
+    if (parseInt(minimumstock) >= parseInt(maxstock)) {
+        alert("Nilai MaxStock harus lebih besar dari MinimumStock!");
+        return; // Berhenti jika MaxStock tidak lebih besar dari MinimumStock
     }
 
-  var data = {
-    kodebarang: kodebarang,
-    namabarang: namabarang,
-    satuan: satuan,
-    itemalias: itemalias,
-    minimumstock: minimumstock,
-    maxstock: maxstock,
-    tipe: tipe,
-    classValue: classValue,  // Include classValue in the data object
-    sn: snData
-};
-
-
+    // AJAX request to check if the item name already exists
     $.ajax({
-        type: "POST",
-        url: "warehouse/updatedatamaster.php",
-        data: data,
-        success: function (response) {
-            console.log(response);
-            $("#exampleModalScrollable").modal("hide");
-            alert("Perubahan berhasil disimpan!");
-            location.reload();
+        url: 'warehouse/check_item_existence.php', // Replace with the actual URL to your server-side script
+        type: 'POST',
+        data: { namabarang: namabarang },
+        success: function(response) {
+            if (response === "exists") {
+                alert("Item Name Is Already");
+            } else {
+                // Continue with the save operation if the item name doesn't exist
+                saveToServer();
+            }
         },
-        error: function (error) {
-            console.error(error);
-            alert("Terjadi kesalahan saat menyimpan perubahan. Mohon coba lagi.");
+        error: function() {
+            alert("Error checking item existence. Please try again.");
         }
     });
+
+    // Function to save data to the server
+    function saveToServer() {
+        // Kirim data ke server menggunakan AJAX
+        $.ajax({
+            type: "POST",
+            url: "warehouse/simpanmaster.php",
+            data: {
+                namabarang: namabarang,
+                itemalias: itemalias,
+                classValue: classValue,
+                satuanValue: satuanValue,
+                tipe: tipe,
+                minimumstock: minimumstock,
+                maxstock: maxstock,
+                stock: stock,
+                sn: sn,
+            },
+            success: function (response) {
+                console.log(response);
+                $("#exampleModalLong").modal("hide");
+                alert("Data berhasil disimpan!");
+                location.reload();
+            },
+            error: function (error) {
+                console.error(error);
+                alert("Terjadi kesalahan saat menyimpan data. Mohon coba lagi.");
+            },
+        });
+    }
 }
