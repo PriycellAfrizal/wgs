@@ -1,103 +1,136 @@
 $(document).ready(function () {
     // ==========================
+    // Helper untuk Select2 Init
+    // ==========================
+    function initSelect2Static(selector, url, placeholder) {
+        if ($(selector).length) {
+            $(selector).select2({
+                placeholder: placeholder,
+                allowClear: true
+            });
+            $.ajax({
+                url: url,
+                dataType: "json",
+                success: function (data) {
+                    $.each(data, function (i, val) {
+                        $(selector).append(
+                            $("<option>", { value: val, text: val })
+                        );
+                    });
+                }
+            });
+        }
+    }
+
+    function initSelect2Ajax(selector, url, placeholder) {
+        if ($(selector).length) {
+            $(selector).select2({
+                ajax: {
+                    url: url,
+                    dataType: "json",
+                    delay: 250,
+                    processResults: function (data) {
+                        return { results: data };
+                    },
+                    cache: true
+                },
+                language: {
+                    searching: function () {
+                        return "Mencari...";
+                    },
+                    noResults: function () {
+                        return "Tidak ditemukan hasil";
+                    }
+                },
+                placeholder: placeholder,
+                minimumInputLength: 0,
+                allowClear: true
+            });
+        }
+    }
+
+    // ==========================
     // Inisialisasi Select2 Utama
     // ==========================
-    $('#class').select2({ 
-        placeholder: 'Class',
-        allowClear: true 
-    });
-    $.ajax({
-        url: 'warehouse/get_classes.php',
-        dataType: 'json',
-        success: function(data) {
-            $.each(data, function(index, value) {
-                $('#class').append('<option value="' + value + '">' + value + '</option>');
-            });
-        }
-    });
-
-    $('#satuan').select2({ 
-        placeholder: 'Unit',
-        allowClear: true 
-    });
-    $.ajax({
-        url: 'warehouse/get_mastersatuan.php',
-        dataType: 'json',
-        success: function(data) {
-            $.each(data, function(index, value) {
-                $('#satuan').append('<option value="' + value + '">' + value + '</option>');
-            });
-        }
-    });
+    initSelect2Static("#class", "warehouse/get_classes.php", "Class");
+    initSelect2Static("#satuan", "warehouse/get_mastersatuan.php", "Unit");
 
     // ==========================
     // Inisialisasi Select2 Edit
     // ==========================
-    const select2Configs = [
-        {id:'#classEdit', url:'warehouse/get_classs.php', placeholder:'Cari Class...'},
-        {id:'#snEdit', url:'warehouse/get_sn.php', placeholder:'Cari SN...'},
-        {id:'#tipeEdit', url:'warehouse/get_tipe.php', placeholder:'Cari Tipe...'},
-        {id:'#satuanEdit', url:'warehouse/get_satuans.php', placeholder:'Cari Satuan...'}
-    ];
-
-    select2Configs.forEach(function(cfg){
-        $(cfg.id).select2({
-            ajax: {
-                url: cfg.url,
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data){ return { results: data }; },
-                cache: true
-            },
-            language: { searching: function(){ return 'Mencari...'; } },
-            placeholder: cfg.placeholder,
-            minimumInputLength: 0,
-            allowClear: true
-        });
-    });
+    initSelect2Ajax("#classEdit", "warehouse/get_classs.php", "Cari Class...");
+    initSelect2Ajax("#snEdit", "warehouse/get_sn.php", "Cari SN...");
+    initSelect2Ajax("#tipeEdit", "warehouse/get_tipe.php", "Cari Tipe...");
+    initSelect2Ajax("#satuanEdit", "warehouse/get_satuans.php", "Cari Satuan...");
 
     // ==========================
     // Inisialisasi DataTables
     // ==========================
-    $('#myTable, #dataTable, #dataTableHover').DataTable();
+    $("#myTable, #dataTable, #dataTableHover").DataTable({
+        ordering: false,
+        searching: true,
+        paging: true,
+        info: true,
+        pageLength: 20
+    });
 });
 
 // ==========================
 // Fungsi Open Modal Edit
 // ==========================
+function openEditModal(el) {
+    const kodebarang   = $(el).data("kodebarang");
+    const namabarang   = $(el).data("namabarang");
+    const satuan       = $(el).data("satuan");
+    const itemalias    = $(el).data("itemalias");
+    const minimumstock = $(el).data("minimumstock");
+    const maxstock     = $(el).data("maxstock");
+    const tipe         = $(el).data("tipe") || "";
+    const classValue   = $(el).data("class") || "";
+    const snData       = $(el).data("sn") || "";
 
-function openEditModal(clickedElement) {
-    const kodebarang = clickedElement.getAttribute('data-kodebarang');
-    const namabarang = clickedElement.getAttribute('data-namabarang');
-    const satuan = clickedElement.getAttribute('data-satuan');
-    const itemalias = clickedElement.getAttribute('data-itemalias');
-    const minimumstock = clickedElement.getAttribute('data-minimumstock');
-    const maxstock = clickedElement.getAttribute('data-maxstock');
-    const tipe = clickedElement.getAttribute('data-tipe');
-    const classValue = clickedElement.getAttribute('data-class');
-    const snData = clickedElement.getAttribute('data-sn') || '';
-
+    // Isi form
     $("#kodebarangEdit").val(kodebarang);
     $("#namabarangEdit").val(namabarang);
     $("#itemaliasEdit").val(itemalias);
     $("#minimumstockEdit").val(minimumstock);
     $("#maxstockEdit").val(maxstock);
 
-    $("#satuanEdit").empty().append(new Option(satuan, satuan, true, true)).trigger('change');
-    $("#classEdit").empty().append(new Option(classValue, classValue, true, true)).trigger('change');
+    // Select2 - single value
+    setSelect2Value("#satuanEdit", satuan);
+    setSelect2Value("#classEdit", classValue);
 
-    const snArray = snData ? snData.split(',') : [];
-    $("#snEdit").empty();
-    snArray.forEach(val => $("#snEdit").append(new Option(val, val, true, true)));
-    $("#snEdit").trigger('change');
-
-    const tipeArray = tipe ? tipe.split(',') : [];
-    $("#tipeEdit").empty();
-    tipeArray.forEach(val => $("#tipeEdit").append(new Option(val, val, true, true)));
-    $("#tipeEdit").trigger('change');
+    // Select2 - multiple value
+    setSelect2Multiple("#snEdit", snData.split(","));
+    setSelect2Multiple("#tipeEdit", tipe.split(","));
 
     $("#exampleModalScrollable").modal("show");
 }
+
+function setSelect2Value(selector, value) {
+    const el = $(selector);
+    el.empty();
+    if (value) {
+        el.append(new Option(value, value, true, true)).trigger("change");
+    }
+}
+
+function setSelect2Multiple(selector, values) {
+    const el = $(selector);
+    el.empty();
+    if (Array.isArray(values)) {
+        values.forEach(val => {
+            if (val) {
+                el.append(new Option(val, val, true, true));
+            }
+        });
+    }
+    el.trigger("change");
+}
+
+// ==========================
+// Fungsi Save
+// ==========================
 function saveChanges() {
     const data = {
         kodebarang: $("#kodebarangEdit").val(),
@@ -109,12 +142,14 @@ function saveChanges() {
         tipe: $("#tipeEdit").val(),
         classValue: $("#classEdit").val(),
         sn: $("#snEdit").val()
-        // ⚠️ tidak perlu kirim namaedit, langsung ambil dari session di PHP
+        // ⚠️ nama user login jangan dikirim, ambil dari PHP session
     };
 
-    // Validasi
-    if (!data.namabarang || !data.itemalias || !data.classValue || !data.satuan || 
-        !data.tipe || !data.sn || !data.minimumstock || !data.maxstock) {
+    // Validasi input
+    if (
+        !data.namabarang || !data.itemalias || !data.classValue || !data.satuan ||
+        !data.tipe || !data.sn || !data.minimumstock || !data.maxstock
+    ) {
         alert("Lengkapi semua data sebelum menyimpan perubahan!");
         return;
     }
@@ -124,17 +159,18 @@ function saveChanges() {
         return;
     }
 
+    // Kirim Ajax
     $.ajax({
         type: "POST",
         url: "warehouse/updatedatamaster.php",
         data: data,
-        success: function(response){
-            console.log("Server Response:", response);
+        success: function (res) {
+            console.log("Server Response:", res);
             $("#exampleModalScrollable").modal("hide");
             alert("Perubahan berhasil disimpan!");
             location.reload();
         },
-        error: function(err){
+        error: function (xhr, status, err) {
             console.error(err);
             alert("Terjadi kesalahan saat menyimpan perubahan. Mohon coba lagi.");
         }
