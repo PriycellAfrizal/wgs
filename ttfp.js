@@ -336,47 +336,47 @@ $(document).ready(function() {
     });
 });
 
-   // // Handler untuk tombol Simpan
-   //  $("#saveButton").on("click", function() {
-   //      $.ajax({
-   //          url: 'purchaselocal/simpan_datattfp.php',
-   //          method: 'POST',
-   //          data: $("#editForm").serialize(),
-   //          dataType: 'json', // Mengatur tipe data yang diharapkan dari server
-   //          beforeSend: function() {
-   //              $('#editModal').modal('hide');
-   //          },
-   //          success: function(response) {
-   //              if (response.status === "success") {
-   //                  Swal.fire({
-   //                      icon: 'success',
-   //                      title: 'Berhasil',
-   //                      text: response.message,
-   //                      timer: 2000,
-   //                      showConfirmButton: false
-   //                  }).then(() => {
-   //                      setTimeout(() => {
-   //                          location.reload(); // Reload halaman setelah 2 detik
-   //                      },);
-   //                  });
-   //              } else {
-   //                  Swal.fire({
-   //                      icon: 'error',
-   //                      title: 'Gagal',
-   //                      text: response.message
-   //                  });
-   //              }
-   //          },
-   //          error: function(xhr, status, error) {
-   //              console.error(xhr.responseText);
-   //              Swal.fire({
-   //                  icon: 'error',
-   //                  title: 'Error',
-   //                  text: 'Terjadi kesalahan saat memperbarui.'
-   //              });
-   //          }
-   //      });
-   //  });
+   // Handler untuk tombol Simpan
+    $("#saveButton").on("click", function() {
+        $.ajax({
+            url: 'purchaselocal/simpan_datattfp.php',
+            method: 'POST',
+            data: $("#editForm").serialize(),
+            dataType: 'json', // Mengatur tipe data yang diharapkan dari server
+            beforeSend: function() {
+                $('#editModal').modal('hide');
+            },
+            success: function(response) {
+                if (response.status === "success") {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        setTimeout(() => {
+                            location.reload(); // Reload halaman setelah 2 detik
+                        },);
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: response.message
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Terjadi kesalahan saat memperbarui.'
+                });
+            }
+        });
+    });
 
 
 
