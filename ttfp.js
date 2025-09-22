@@ -1,4 +1,4 @@
-$(document).ready(function () {
+  $(document).ready(function () {
     // Inisialisasi DataTables untuk tabel dengan ID tertentu
     $('#myTable').DataTable();
     $('#dataTable').DataTable();
@@ -377,15 +377,6 @@ $(document).ready(function() {
             }
         });
     });
-
-
-
-
-
-
-
-
-
 
 
 
