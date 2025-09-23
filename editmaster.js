@@ -156,38 +156,54 @@ function saveChanges() {
         Swal.fire("Peringatan", "Nilai MaxStock harus lebih besar atau sama dengan MinimumStock!", "warning");
         return;
     }
+$.ajax({
+    type: "POST",
+    url: "warehouse/updatedatamaster.php",
+    data: data,
+    dataType: "json", // otomatis parse JSON
+    success: function(response) {
+        console.log("Server Response (JSON):", response);
 
-    $.ajax({
-        type: "POST",
-        url: "warehouse/updatedatamaster.php",
-        data: data,
-        success: function(response) {
-            console.log("Server Response:", response);
+        // Kalau JSON valid
+        if (response.status === "GagalUpdate") {
+            Swal.fire({
+                title: "Gagal",
+                html: response.error ?? "Terjadi kesalahan!",
+                icon: "error",
+                width: "700px"
+            });
+        } else if (response.status === "DataBerhasilDiupdate") {
+            Swal.fire({
+                title: "Berhasil",
+                text: "Perubahan berhasil disimpan!",
+                icon: "success",
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                $("#exampleModalScrollable").modal("hide");
+                location.reload();
+            });
+        } else {
+            Swal.fire("Peringatan", "Respons server tidak dikenali!", "warning");
+        }
+    },
+    error: function(xhr, status, error) {
+        console.error("AJAX Error:", error);
 
-            // Jika PHP ada error MySQL, tampilkan langsung
-            if (response.includes("Error") || response.includes("red")) {
-                Swal.fire({
-                    title: "Gagal",
-                    html: response,   // tampilkan isi error dari PHP
-                    icon: "error",
-                    width: "700px"
-                });
-            } else {
-                Swal.fire({
-                    title: "Berhasil",
-                    text: "Perubahan berhasil disimpan!",
-                    icon: "success",
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    $("#exampleModalScrollable").modal("hide");
-                    location.reload();
-                });
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("AJAX Error:", error);
+        // Kalau server balikin text/html (misalnya error MySQL langsung)
+        let respText = xhr.responseText || "Tidak ada respons dari server";
+        console.log("Raw Server Response:", respText);
+
+        if (respText.includes("Error") || respText.includes("red")) {
+            Swal.fire({
+                title: "Gagal",
+                html: respText,
+                icon: "error",
+                width: "700px"
+            });
+        } else {
             Swal.fire("Kesalahan", "Tidak dapat terhubung ke server: " + error, "error");
         }
-    });
-}
+    }
+});
+
