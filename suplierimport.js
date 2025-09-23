@@ -40,40 +40,26 @@ function editContact(id) {
         }
     });
 }
-
-$(document).on('submit', '#editForm', function(e) {
+   $(document).on('submit', '#editForm', function(e) {
     e.preventDefault();
 
     $.ajax({
         type: "POST",
         url: "purchaseimport/update_Contact.php", 
         data: $(this).serialize(),
-        dataType: "json",
+        dataType: "json", // ✅ pastikan hasil diparse ke JSON
         success: function(response) {
             if (response.status === "success") {
-                Swal.fire({
-                    icon: "success",
-                    title: "Berhasil",
-                    text: response.message
-                }).then(() => {
-                    $('#editModal').modal('hide');
-                    location.reload();
-                });
+                alert(response.message); // ✅ tampilkan pesan sukses
+                $('#editModal').modal('hide');
+                location.reload();
             } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "Gagal",
-                    text: response.message
-                });
+                alert("Error: " + response.message); // ✅ tampilkan pesan error
             }
         },
         error: function(xhr, status, error) {
             console.error("AJAX Error:", error);
-            Swal.fire({
-                icon: "error",
-                title: "Error Server",
-                text: "Terjadi kesalahan saat menghubungi server."
-            });
+            alert("Terjadi kesalahan saat menghubungi server.");
         }
     });
 });
