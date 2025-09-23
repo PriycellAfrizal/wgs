@@ -12,6 +12,7 @@ $(document).ready(function () {
                 url: url,
                 dataType: "json",
                 success: function (data) {
+                    $(selector).empty();
                     $.each(data, function (i, val) {
                         $(selector).append(
                             $("<option>", { value: val, text: val })
@@ -35,12 +36,8 @@ $(document).ready(function () {
                     cache: true
                 },
                 language: {
-                    searching: function () {
-                        return "Mencari...";
-                    },
-                    noResults: function () {
-                        return "Tidak ditemukan hasil";
-                    }
+                    searching: () => "Mencari...",
+                    noResults: () => "Tidak ditemukan hasil"
                 },
                 placeholder: placeholder,
                 minimumInputLength: 0,
@@ -133,12 +130,12 @@ function setSelect2Multiple(selector, values) {
 // ==========================
 function saveChanges() {
     const data = {
-        kodebarang: $("#kodebarangEdit").val(),
-        namabarang: $("#namabarangEdit").val(),
+        kodebarang: $("#kodebarangEdit").val().trim(),
+        namabarang: $("#namabarangEdit").val().trim(),
         satuan: $("#satuanEdit").val(),
-        itemalias: $("#itemaliasEdit").val(),
-        minimumstock: $("#minimumstockEdit").val(),
-        maxstock: $("#maxstockEdit").val(),
+        itemalias: $("#itemaliasEdit").val().trim(),
+        minimumstock: $("#minimumstockEdit").val().trim(),
+        maxstock: $("#maxstockEdit").val().trim(),
         tipe: $("#tipeEdit").val(),
         classValue: $("#classEdit").val(),
         sn: $("#snEdit").val()
@@ -157,37 +154,37 @@ function saveChanges() {
         return;
     }
 
-  $.ajax({
-    type: "POST",
-    url: "warehouse/updatedatamaster.php",
-    data: data,
-    dataType: "json",
-    success: function(response) {
-        console.log("Server Response:", response);
+    $.ajax({
+        type: "POST",
+        url: "warehouse/updatedatamaster.php",
+        data: data,
+        dataType: "json",
+        success: function (response) {
+            console.log("Server Response:", response);
 
-        if (response.success) {
-            Swal.fire({
-                title: "Berhasil",
-                text: response.message,
-                icon: "success",
-                timer: 2000,
-                showConfirmButton: false
-            }).then(() => {
-                $("#exampleModalScrollable").modal("hide");
-                location.reload();
-            });
-        } else {
-            Swal.fire({
-                title: "Gagal",
-                text: response.message,
-                icon: "error",
-                width: "700px"
-            });
+            if (response.success) {
+                Swal.fire({
+                    title: "Berhasil",
+                    text: response.message,
+                    icon: "success",
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    $("#exampleModalScrollable").modal("hide");
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    title: "Gagal",
+                    text: response.message,
+                    icon: "error",
+                    width: "700px"
+                });
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX Error:", error, xhr.responseText);
+            Swal.fire("Kesalahan", "Tidak dapat terhubung ke server", "error");
         }
-    },
-    error: function(xhr, status, error) {
-        console.error("AJAX Error:", error, xhr.responseText);
-        Swal.fire("Kesalahan", "Tidak dapat terhubung ke server", "error");
-    }
-});
-
+    });
+}
