@@ -156,26 +156,26 @@ function saveChanges() {
         Swal.fire("Peringatan", "Nilai MaxStock harus lebih besar atau sama dengan MinimumStock!", "warning");
         return;
     }
-$.ajax({
+
+    $.ajax({
     type: "POST",
     url: "warehouse/updatedatamaster.php",
     data: data,
-    dataType: "json", // otomatis parse JSON
+    dataType: "json", // <-- ini penting
     success: function(response) {
-        console.log("Server Response (JSON):", response);
+        console.log("Server Response:", response);
 
-        // Kalau JSON valid
-        if (response.status === "GagalUpdate") {
+        if (response.status === "error") {
             Swal.fire({
                 title: "Gagal",
-                html: response.error ?? "Terjadi kesalahan!",
+                html: response.message + "<br><small>" + (response.error ?? "") + "</small>",
                 icon: "error",
                 width: "700px"
             });
-        } else if (response.status === "DataBerhasilDiupdate") {
+        } else if (response.status === "success") {
             Swal.fire({
                 title: "Berhasil",
-                text: "Perubahan berhasil disimpan!",
+                text: response.message,
                 icon: "success",
                 timer: 2000,
                 showConfirmButton: false
@@ -188,22 +188,7 @@ $.ajax({
         }
     },
     error: function(xhr, status, error) {
-        console.error("AJAX Error:", error);
-
-        // Kalau server balikin text/html (misalnya error MySQL langsung)
-        let respText = xhr.responseText || "Tidak ada respons dari server";
-        console.log("Raw Server Response:", respText);
-
-        if (respText.includes("Error") || respText.includes("red")) {
-            Swal.fire({
-                title: "Gagal",
-                html: respText,
-                icon: "error",
-                width: "700px"
-            });
-        } else {
-            Swal.fire("Kesalahan", "Tidak dapat terhubung ke server: " + error, "error");
-        }
+        console.error("AJAX Error:", error, xhr.responseText);
+        Swal.fire("Kesalahan", "Tidak dapat terhubung ke server", "error");
     }
 });
-
