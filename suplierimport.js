@@ -1,4 +1,4 @@
-         document.getElementById('telpInput').addEventListener('input', function (e) {
+   document.getElementById('telpInput').addEventListener('input', function (e) {
     // Hanya izinkan karakter yang cocok dengan pola
     this.value = this.value.replace(/[^0-9\-\(\) ]/g, '');
 });
@@ -40,6 +40,7 @@ function editContact(id) {
         }
     });
 }
+
 $(document).on('submit', '#editForm', function(e) {
     e.preventDefault();
 
@@ -53,7 +54,9 @@ $(document).on('submit', '#editForm', function(e) {
                 Swal.fire({
                     icon: "success",
                     title: "Berhasil",
-                    text: response.message
+                    text: response.message,
+                    timer: 2000, // tampil 2 detik
+                    showConfirmButton: false
                 }).then(() => {
                     $('#editModal').modal('hide');
                     location.reload();
