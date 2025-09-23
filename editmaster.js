@@ -1,4 +1,4 @@
-$(document).ready(function () {
+  $(document).ready(function () {
     // ==========================
     // Helper untuk Select2 Init
     // ==========================
@@ -142,13 +142,14 @@ function saveChanges() {
         sn: $("#snEdit").val()
         // nama edit otomatis dari session PHP
     };
+// Validasi form sederhana
+if (!data.namabarang.trim() || !data.itemalias.trim() || !data.classValue.trim() || 
+    !data.satuan.trim() || !data.tipe.trim() || !data.sn.trim() || 
+    !data.minimumstock.trim() || !data.maxstock.trim()) {
+    Swal.fire("Peringatan", "Lengkapi semua data sebelum menyimpan!", "warning");
+    return;
+}
 
-    // Validasi form sederhana
-    if (!data.namabarang || !data.itemalias || !data.classValue || !data.satuan ||
-        !data.tipe || !data.sn || !data.minimumstock || !data.maxstock) {
-        Swal.fire("Peringatan", "Lengkapi semua data sebelum menyimpan!", "warning");
-        return;
-    }
 
     if (parseInt(data.maxstock) < parseInt(data.minimumstock)) {
         Swal.fire("Peringatan", "Nilai MaxStock harus lebih besar atau sama dengan MinimumStock!", "warning");
@@ -189,4 +190,3 @@ function saveChanges() {
         }
     });
 }
-
