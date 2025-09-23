@@ -1,8 +1,13 @@
 function simpanmasterdivisi() {
-    var divisiValue = $("#divisi").val();
+    let divisiValue = $("#divisi").val().trim();
 
-    if (!divisiValue.trim()) {
-        alert("Please enter a valid divisi.");
+    // Validasi input kosong
+    if (!divisiValue) {
+        Swal.fire({
+            icon: "warning",
+            title: "Peringatan",
+            text: "Divisi tidak boleh kosong!"
+        });
         return;
     }
 
@@ -14,15 +19,30 @@ function simpanmasterdivisi() {
     .then(res => res.json())
     .then(response => {
         if (response.status === "success") {
-            alert(response.message);
-            location.reload();
-            $('#yourModalId').modal('hide');
+            Swal.fire({
+                icon: "success",
+                title: "Berhasil",
+                text: response.message,
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                $('#yourModalId').modal('hide');
+                location.reload();
+            });
         } else {
-            alert("Gagal: " + response.message);
+            Swal.fire({
+                icon: "error",
+                title: "Gagal",
+                text: response.message
+            });
         }
     })
     .catch(err => {
         console.error(err);
-        alert("Terjadi kesalahan saat menyimpan divisi");
+        Swal.fire({
+            icon: "error",
+            title: "Kesalahan",
+            text: "Terjadi kesalahan saat menyimpan divisi!"
+        });
     });
 }
