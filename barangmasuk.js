@@ -83,58 +83,43 @@
               });
             }
 
-            function saveChangesmasuk() {
-              // Retrieve data from the form
-              var tgl_in = $("#tgl_in").val();
-              var namabarang = $(".namabarang").val();
-              var satuan = $("#satuan").val();
-              var stock_in = $(".qty").val();
-              var serialnumber = $("#serialnumber").val();
-              var remarks = $("#remarks").val();
-              var kodebarang = $("#kodebarang").val();
-              var sn = $("#sn").val();
+         function saveChangesmasuk() {
+  var tgl_in = $("#tgl_in").val();
+  var namabarang = $(".namabarang").val();
+  var satuan = $("#satuan").val();
+  var stock_in = $(".qty").val();
+  var serialnumber = $("#serialnumber").val();
+  var remarks = $("#remarks").val();
+  var kodebarang = $("#kodebarang").val();
+  var sn = $("#sn").val();
 
+  if (!stock_in) {
+    alert("Lengkapi Qty");
+    return;
+  }
 
+  if (!tgl_in || !namabarang || !satuan || !stock_in || !kodebarang || !sn) {
+    alert("Lengkapi semua data sebelum menyimpan");
+    return;
+  }
 
-              // if (!remarks) {
-              //   alert("Lengkapi Remarks");
-              //   return;
-              // }
+  if (sn.trim().toLowerCase() !== "no" && !serialnumber) {
+    alert("Lengkapi Serial Number");
+    return;
+  }
 
+  var data = {
+    tgl_in: tgl_in,
+    namabarang: namabarang,
+    satuan: satuan,
+    stock_in: stock_in,
+    serialnumber: serialnumber,
+    remarks: remarks,
+    kodebarang: kodebarang,
+    sn: sn
+  };
 
-              if (!stock_in) {
-                alert("Lengkapi Qty");
-                return;
-              }
-
-              if (!tgl_in || !namabarang || !satuan || !stock_in || !kodebarang || !sn) {
-               alert("Lengkapi semua data sebelum menyimpan");
-                return;
-              }
-
-              // Check if sn is "no" and serialnumber is empty
-              if (sn.trim().toLowerCase() === "no" && !serialnumber) {
-                // Allow serialnumber to be empty in this case]
-              } else if (!serialnumber) {
-                // If serialnumber is empty and sn is not "no", show an error
-                alert("Lengkapi Serial Number");
-                return;
-              }
-
-              var data = {
-                tgl_in: tgl_in,
-                namabarang: namabarang,
-                satuan: satuan,
-                stock_in: stock_in,
-                serialnumber: serialnumber,
-                remarks: remarks,
-                kodebarang: kodebarang,
-                sn: sn
-              };
-
-
-              // Make an AJAX request to save the data to the server
-          // --- CEK DULU apakah serialnumber sudah ada di barangin ---
+  // --- CEK DULU apakah serialnumber sudah ada di barangin ---
   $.ajax({
     type: "POST",
     url: "warehouse/check_serial.php", // bikin file ini
@@ -166,74 +151,6 @@
     }
   });
 }
-
-$(document).ready(function () {
-    $('#kodeproduksi').select2({
-        ajax: {
-            url: 'warehouse/get_kodeproduksi.php',
-            dataType: 'json',
-            delay: 250,
-            processResults: function (data) {
-                console.log(data); // Log the received data to the console
-                return {
-                    results: data
-                };
-            },
-            cache: true
-        },
-        language: {
-            searching: function () {
-                return 'Mencari...';
-            }
-        },
-        placeholder: 'Cari...',
-        minimumInputLength: 0,
-        allowClear: true,
-        formatNoMatches: function () {
-            return 'Tidak ditemukan hasil';
-        }
-    });
-});
-
-
-
-
-
-
-
-
-
-function carispk() {
-    // Get the selected nama barang
-    var selectedKodeProduksi = $("#kodeproduksi").val();
-
-    // Make an AJAX request to get the corresponding kodebarang
-    $.ajax({
-        type: "GET",
-        url: "warehouse/get_spk.php", // Replace with the actual server-side script to handle the data
-        data: { kodeproduksi: selectedKodeProduksi },
-        dataType: 'json',
-        success: function(response) {
-            // Update the hidden input field with the fetched kodebarang
-
-            $("#spk").val(response.spk);
-
-          
-        },
-        error: function(error) {
-            // Handle errors, if any
-            console.error(error);
-        }
-    });
-}
-
-
-
-
-
-
-
-
 
 
             $(document).ready(function() {
