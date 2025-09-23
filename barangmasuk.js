@@ -134,33 +134,38 @@
 
 
               // Make an AJAX request to save the data to the server
-              $.ajax({
-                type: "POST", // Change the HTTP method if needed
-                url: "warehouse/save_changes.php", // Replace with the actual server-side script to handle the data
-                data: data,
-                success: function(response) {
-                  // Tanggapi dari server setelah pembaruan berhasil
-                  console.log(response);
-
-                  // Sembunyikan modal setelah pembaruan berhasil
-                  $("#exampleModalScrollable").modal("hide");
-
-
-                  // Show an alert after successful save
-                  alert("Data berhasil disimpan!");
-
-                  // Refresh halaman atau perbarui tampilan data di tempat jika diperlukan
-                  location.reload(); // Anda mungkin ingin menggantinya dengan logika yang lebih tepat
-                },
-
-
-
-                error: function(error) {
-                  // Handle errors, if any
-                  console.error(error);
-                }
-              });
-            }
+          // --- CEK DULU apakah serialnumber sudah ada di barangin ---
+  $.ajax({
+    type: "POST",
+    url: "warehouse/check_serial.php", // bikin file ini
+    data: { namabarang: namabarang, serialnumber: serialnumber },
+    success: function(resp) {
+      if (resp === "EXIST") {
+        alert("Serial Number sudah ada untuk barang ini, penyimpanan dibatalkan!");
+        return;
+      } else {
+        // Lanjutkan penyimpanan
+        $.ajax({
+          type: "POST",
+          url: "warehouse/save_changes.php",
+          data: data,
+          success: function(response) {
+            console.log(response);
+            $("#exampleModalScrollable").modal("hide");
+            alert("Data berhasil disimpan!");
+            location.reload();
+          },
+          error: function(error) {
+            console.error(error);
+          }
+        });
+      }
+    },
+    error: function(err) {
+      console.error(err);
+    }
+  });
+}
 
 $(document).ready(function () {
     $('#kodeproduksi').select2({
