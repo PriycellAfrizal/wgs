@@ -128,14 +128,15 @@ function setSelect2Multiple(selector, values) {
 // ==========================
 // Fungsi Save
 // ==========================
+
 function saveChanges() {
     const data = {
-        kodebarang: $("#kodebarangEdit").val().trim(),
-        namabarang: $("#namabarangEdit").val().trim(),
+        kodebarang: $("#kodebarangEdit").val(),
+        namabarang: $("#namabarangEdit").val(),
         satuan: $("#satuanEdit").val(),
-        itemalias: $("#itemaliasEdit").val().trim(),
-        minimumstock: $("#minimumstockEdit").val().trim(),
-        maxstock: $("#maxstockEdit").val().trim(),
+        itemalias: $("#itemaliasEdit").val(),
+        minimumstock: $("#minimumstockEdit").val(),
+        maxstock: $("#maxstockEdit").val(),
         tipe: $("#tipeEdit").val(),
         classValue: $("#classEdit").val(),
         sn: $("#snEdit").val()
@@ -158,8 +159,8 @@ function saveChanges() {
         type: "POST",
         url: "warehouse/updatedatamaster.php",
         data: data,
-        dataType: "json",
-        success: function (response) {
+        dataType: "json", // <-- penting, supaya response langsung jadi object
+        success: function(response) {
             console.log("Server Response:", response);
 
             if (response.success) {
@@ -182,9 +183,10 @@ function saveChanges() {
                 });
             }
         },
-        error: function (xhr, status, error) {
+        error: function(xhr, status, error) {
             console.error("AJAX Error:", error, xhr.responseText);
             Swal.fire("Kesalahan", "Tidak dapat terhubung ke server", "error");
         }
     });
 }
+
