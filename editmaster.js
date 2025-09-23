@@ -157,22 +157,15 @@ function saveChanges() {
         return;
     }
 
-    $.ajax({
+  $.ajax({
     type: "POST",
     url: "warehouse/updatedatamaster.php",
     data: data,
-    dataType: "json", // <-- ini penting
+    dataType: "json",
     success: function(response) {
         console.log("Server Response:", response);
 
-        if (response.status === "error") {
-            Swal.fire({
-                title: "Gagal",
-                html: response.message + "<br><small>" + (response.error ?? "") + "</small>",
-                icon: "error",
-                width: "700px"
-            });
-        } else if (response.status === "success") {
+        if (response.success) {
             Swal.fire({
                 title: "Berhasil",
                 text: response.message,
@@ -184,7 +177,12 @@ function saveChanges() {
                 location.reload();
             });
         } else {
-            Swal.fire("Peringatan", "Respons server tidak dikenali!", "warning");
+            Swal.fire({
+                title: "Gagal",
+                text: response.message,
+                icon: "error",
+                width: "700px"
+            });
         }
     },
     error: function(xhr, status, error) {
@@ -192,3 +190,4 @@ function saveChanges() {
         Swal.fire("Kesalahan", "Tidak dapat terhubung ke server", "error");
     }
 });
+
