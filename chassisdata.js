@@ -86,48 +86,41 @@ $(document).ready(function () {
         });
     });
 
-    // Handle Edit button click to fetch and populate modal data
-    $(document).on('click', '.btn-edit', function () {
-        var id = $(this).data('id');
-        $.ajax({
-            url: 'produksi/get_chassis_data.php',
-            type: 'POST',
-            data: { id: id },
-            dataType: 'json',
-            success: function (response) {
-                if (response.error) {
-                    console.error('Error:', response.error);
-                    alert('Failed to fetch data. Please try again later.');
-                    return;
-                }
-
-                // Populate the form fields
-                $("#id").val(response.id);
-                $("#tgl_in").val(response.tgl_in);
-                $("#namacustomer").val(response.namacustomer);
-                $("#nomorrangka").val(response.nomorrangka);
-                $("#nomormesin").val(response.nomormesin);
-
-                // Set Select2 values for SPK and Type
-                var spkSelect = $('#spk');
-                spkSelect.empty();
-                var optionSPK = new Option(response.spk, response.spk, true, true);
-                spkSelect.append(optionSPK).trigger('change');
-
-                var typeSelect = $('#type');
-                typeSelect.empty();
-                var optionType = new Option(response.type, response.type, true, true);
-                typeSelect.append(optionType).trigger('change');
-                
-                // Show the modal
-                $('#exampleModalLong').modal('show');
-            },
-            error: function (xhr, status, error) {
-                console.error('AJAX Error:', error);
+  $(document).on('click', '.btn-edit', function () {
+    var id = $(this).data('id');
+    $.ajax({
+        url: 'produksi/get_chassis_data.php',
+        type: 'POST',
+        data: { id: id },
+        dataType: 'json',
+        success: function (response) {
+            if (response.error) {
+                console.error('Error:', response.error);
                 alert('Failed to fetch data. Please try again later.');
+                return;
             }
-        });
+
+            // Populate the form fields
+            $("#id").val(response.id);
+            $("#tgl_in").val(response.tgl_in);
+            $("#namacustomer").val(response.namacustomer || '');
+            $("#nomorrangka").val(response.nomorrangka);
+            $("#nomormesin").val(response.nomormesin);
+
+            // Populate Select2
+            $('#spk').empty().append(new Option(response.spk, response.spk, true, true)).trigger('change.select2');
+            $('#type').empty().append(new Option(response.type, response.type, true, true)).trigger('change.select2');
+
+            // Show modal
+            $('#exampleModalLong').modal('show');
+        },
+        error: function (xhr, status, error) {
+            console.error('AJAX Error:', error);
+            alert('Failed to fetch data. Please try again later.');
+        }
     });
+});
+
 
     // Define the function simpanChasis
     window.simpanChasis = function () {
