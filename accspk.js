@@ -1,4 +1,13 @@
 
+$(document).ready(function () {
+    $('#dataTable').DataTable({
+        "ordering": false,    // Hilangkan semua fitur sort + panah
+        "searching": true,    // Pencarian tetap aktif
+        "paging": true,       // Paging aktif
+        "info": true,         // Info jumlah baris
+        "pageLength": 20      // Default tampil 20 baris
+    });
+});
 
  function closeModal() {
             document.getElementById('myModal').style.display = 'none';
@@ -159,6 +168,7 @@ function updateStatusSPK(spk) {
         }
     });
 }
+
 
 
 
