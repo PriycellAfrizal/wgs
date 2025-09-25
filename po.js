@@ -215,30 +215,38 @@ function formatRupiah(value) {
 
 
 function updateTotalPrice(element, index) {
-    let qty = parseFloat(document.getElementById('qty' + index).value.replace(/[^0-9]/g, '')) || 0;
+    // Ambil dan parsing qty: hanya izinkan titik sebagai desimal
+    let qtyInput = document.getElementById('qty' + index).value;
+
+    // Hanya validkan angka dan titik, hapus karakter lain
+    qtyInput = qtyInput.replace(/[^0-9.]/g, '');
+    let qty = parseFloat(qtyInput) || 0;
+
+    // Update input qty agar selalu valid
+    document.getElementById('qty' + index).value = qtyInput;
+
+    // Ambil harga (Rp) dan parsing jadi number
     let price = parseRupiah(document.getElementById('price' + index).value) || 0;
 
-    // Mendapatkan nilai input diskon dan menghapus karakter selain angka dan koma
+    // Ambil diskon, hanya angka dan titik sebagai desimal
     let discountInput = document.getElementById('discount' + index).value;
-    let sanitizedDiscountInput = discountInput.replace(/[^0-9,.]/g, ''); // Hanya mengizinkan angka dan koma
+    let sanitizedDiscountInput = discountInput.replace(/[^0-9.]/g, '');
+    let discount = parseFloat(sanitizedDiscountInput) || 0;
 
-    // Mengganti koma sebagai pemisah desimal jika ada
-    let discount = parseFloat(sanitizedDiscountInput.replace(',', '.')) || 0;
-
-    // Update nilai input diskon dengan versi yang sudah divalidasi
+    // Update input diskon dengan versi valid
     document.getElementById('discount' + index).value = sanitizedDiscountInput;
 
-    // Hitung diskon dalam nilai absolut
+    // Hitung diskon
     let discountAmount = (price * qty) * (discount / 100);
-    
+
     // Hitung total harga setelah diskon
     let totalPrice = (price * qty) - discountAmount;
 
-    // Update nilai diskon dan total harga dalam elemen input
-    document.getElementById('discountAmount' + index).value = formatRupiah(discountAmount.toFixed(2).toString());
-    document.getElementById('totalprice' + index).value = formatRupiah(totalPrice.toFixed(2).toString());
+    // Update elemen input dengan format Rupiah
+    document.getElementById('discountAmount' + index).value = formatRupiah(discountAmount.toFixed(2));
+    document.getElementById('totalprice' + index).value = formatRupiah(totalPrice.toFixed(2));
 
-    // Panggil fungsi untuk mengupdate subtotal setelah memperbarui total harga
+    // Update subtotal tabel
     updateSubtotal();
 }
 
