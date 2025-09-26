@@ -187,22 +187,25 @@ function savesuratjalan() {
                 var sjTableBody = document.getElementById('suratjalanTableBody');
                 sjTableBody.innerHTML = '';
                 if (data.posuratjalan) {
-                    data.posuratjalan.forEach(function(sjItem, index) {
-                        var sjRow = sjTableBody.insertRow();
-                        var cell1 = sjRow.insertCell(0);
-                        var cell2 = sjRow.insertCell(1);
-                        var cell3 = sjRow.insertCell(2);
-                        var cell4 = sjRow.insertCell(3);
-                        var cell5 = sjRow.insertCell(4);
-                        var cell6 = sjRow.insertCell(5); // Tambahkan cell untuk nomor urut
+                data.posuratjalan.forEach(function(sjItem, index) {
+    var sjRow = sjTableBody.insertRow();
+    var cell1 = sjRow.insertCell(0);
+    var cell2 = sjRow.insertCell(1);
+    var cell3 = sjRow.insertCell(2);
+    var cell4 = sjRow.insertCell(3);
+    var cell5 = sjRow.insertCell(4);
+    var cell6 = sjRow.insertCell(5);
 
-                        cell1.innerText = index + 1; // Nomor urut
-                        cell2.innerText = sjItem.nosuratjalan;
-                        cell3.innerText = sjItem.tglsj;
-                        cell4.innerText = sjItem.namabarang;
-                        cell5.innerText = sjItem.qty;
-                        cell6.innerText = sjItem.nosp;
-                    });
+    cell1.innerText = index + 1;
+    cell2.innerText = sjItem.nosuratjalan;
+    cell3.innerText = sjItem.tglsj;
+    cell4.innerText = sjItem.namabarang;
+
+    // Pastikan qty sebagai double
+    var qtyDouble = parseFloat(sjItem.qty);
+    cell5.innerText = qtyDouble; // atau qtyDouble.toFixed(2) jika mau 2 desimal
+    cell6.innerText = sjItem.nosp;
+});
                 }
 
                 // Update labelDisplay berdasarkan nilai poco
