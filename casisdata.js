@@ -6,7 +6,7 @@ $(document).ready(function () {
 
     // Initialize Select2 for 'type' field
     $('#type').select2({
-        width: '470px',
+        width: '200px',
         placeholder: 'Search Type Chassis .....',
         minimumInputLength: 0,
         ajax: {
