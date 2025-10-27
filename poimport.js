@@ -1,14 +1,5 @@
 
 
-   $(document).ready(function () {
-
-        $('#myTable').DataTable(); // ID From dataTable 
-        $('#dataTable').DataTable(); // ID From dataTable 
-        $('#dataTableHover').DataTable(); // ID From dataTable with Hover
-
-
-
-    });
 
 document.addEventListener('DOMContentLoaded', function() {
     // Set initial value of PPN amount input field to empty string
