@@ -1,4 +1,31 @@
 
+$(document).ready(function() {
+    // Tambahkan custom sorting untuk kolom status
+    $.fn.dataTable.ext.order['status-priority'] = function(settings, colIndex) {
+        return this.api().column(colIndex, { order: 'index' }).data().map(function(status) {
+            status = status.toString().trim().toUpperCase();
+            if (status === 'APPROVED') return 1;      // PRIORITAS TERTINGGI
+            if (status === 'DELIVERED') return 2;     // PRIORITAS KEDUA
+            return 3;                                 // LAINNYA
+        });
+    };
+
+    // Inisialisasi DataTable
+    var table = $('#dataTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        order: [[4, 'asc']], // Kolom ke-5 (index 4) diasumsikan adalah kolom status
+        columnDefs: [
+            {
+                targets: 4, // index kolom status
+                orderDataType: 'status-priority' // gunakan custom sorting
+            }
+        ]
+    });
+});
+
 
 
 document.addEventListener('DOMContentLoaded', function() {
