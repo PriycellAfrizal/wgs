@@ -175,7 +175,6 @@ function openModal(button) {
                 var cell5 = row.insertCell(4);
                 var cell6 = row.insertCell(5);
                 var cell7 = row.insertCell(6);
-                var cell8 = row.insertCell(7); // Menambahkan cell untuk permintaan
 
                 cell1.innerText = index + 1; // Nomor urut
                 cell2.innerText = item.namabarang; 
@@ -537,6 +536,7 @@ function printDocument(nopo) {
         };
     };
 }
+
 
 
 
